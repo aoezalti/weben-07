@@ -136,7 +136,10 @@ function buildProductGrid(obj) {
 $(document).ready(function () {
     $("#menu").append("<li class=\"nav-item\"><a class=\"nav-link active\" aria-current=\"page\" href=\"./index.html\">Home</a></li>");
     $("#menu").append("<li class=\"nav-item\"><a class=\"nav-link active\" aria-current=\"page\" href=\"#!\">Über uns</a></li>");
-    $("#buttons").append("<button class=\"btn btn-outline-dark\"><i class=\"bi bi-person-fill me-1\"></i>Anmelden</button>")
+    $("#buttons").append("<button id=\"registerButton\" class=\"btn btn-outline-dark\"><i class=\"bi bi-person-fill me-1\"></i>Anmelden</button>");
+    document.getElementById("registerButton").onclick = function(){
+        location.href= "register.html";
+    };
     $("#buttons").append("<button class=\"btn btn-outline-dark\"><i class=\"bi-cart-fill me-1\"></i>Einkaufswagen<span class=\"badge bg-dark text-white ms-1 rounded-pill\">" + items + "</span></button>");
     $("#specialOffers").append(offerString);
     $("#productgrid").append(productString);
