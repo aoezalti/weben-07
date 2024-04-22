@@ -1,56 +1,62 @@
- <div class="container mt-5">
-        <h2>Registrierungsformular</h2>
-        <form>
-            <div class="mb-3">
-                <label for="anrede" class="form-label">Anrede</label>
-                <select class="form-select" id="anrede" required>
-                    <option value="">Bitte wählen...</option>
-                    <option>Herr</option>
-                    <option>Frau</option>
-                    <option>Divers</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="vorname" class="form-label">Vorname</label>
-                <input type="text" class="form-control" id="vorname" required>
-            </div>
-            <div class="mb-3">
-                <label for="nachname" class="form-label">Nachname</label>
-                <input type="text" class="form-control" id="nachname" required>
-            </div>
-            <div class="mb-3">
-                <label for="adresse" class="form-label">Adresse</label>
-                <input type="text" class="form-control" id="adresse" required>
-            </div>
-            <div class="mb-3">
-                <label for="plz" class="form-label">PLZ</label>
-                <input type="text" class="form-control" id="plz" required>
-            </div>
-            <div class="mb-3">
-                <label for="ort" class="form-label">Ort</label>
-                <input type="text" class="form-control" id="ort" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Emailadresse</label>
-                <input type="text" class="form-control" id="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="benutzername" class="form-label">Benutzername</label>
-                <input type="text" class="form-control" id="benutzername" required>
-            </div>
-            <div class="mb-3">
-                <label for="passwort" class="form-label">Passwort</label>
-                <input type="password" class="form-control" id="passwort" required>
-            </div>
-            <div class="mb-3">
-                <label for="passwortVerify" class="form-label">Passwort bestätigen</label>
-                <input type="password" class="form-control" id="passwortVerify" required>
-            </div>
-            <div class="mb-3">
-                <label for="zahlungsinformationen" class="form-label">Zahlungsinformationen</label>
-                <input type="text" class="form-control" id="zahlungsinformationen" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Registrierung abschließen</button>
-            <button type="reset" class="btn btn-secondary">Formular Daten löschen</button>
-        </form>
+<div class="container mt-5 mb-5"> <!-- Added mb-5 for more bottom margin -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mb-4">Registrierung</h2>
+            <form>
+                <div class="mb-3">
+                    <label for="anrede" class="form-label">Anrede</label>
+                    <select class="form-select" id="anrede" required>
+                        <option value="">Bitte wählen...</option>
+                        <option>Herr</option>
+                        <option>Frau</option>
+                        <option>Divers</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="vorname" class="form-label">Vorname</label>
+                    <input type="text" class="form-control" id="vorname" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nachname" class="form-label">Nachname</label>
+                    <input type="text" class="form-control" id="nachname" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adresse" class="form-label">Adresse</label>
+                    <input type="text" class="form-control" id="adresse" required>
+                </div>
+                <div class="mb-3">
+                    <label for="plz" class="form-label">PLZ</label>
+                    <input type="text" class="form-control" id="plz" required>
+                </div>
+                <div class="mb-3">
+                    <label for="ort" class="form-label">Ort</label>
+                    <input type="text" class="form-control" id="ort" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Emailadresse</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="benutzername" class="form-label">Benutzername</label>
+                    <input type="text" class="form-control" id="benutzername" required>
+                </div>
+                <div class="mb-3">
+                    <label for="passwort" class="form-label">Passwort</label>
+                    <input type="password" class="form-control" id="passwort" required>
+                </div>
+                <div class="mb-3">
+                    <label for="passwortVerify" class="form-label">Passwort bestätigen</label>
+                    <input type="password" class="form-control" id="passwortVerify" required>
+                </div>
+                <div class="mb-3">
+                    <label for="zahlungsinformationen" class="form-label">Zahlungsinformationen</label>
+                    <input type="text" class="form-control" id="zahlungsinformationen" required>
+                </div>
+                <div class="mb-4">
+                    <button type="submit" class="btn btn-primary">Registrieren</button>
+                    <button type="reset" class="btn btn-secondary">Daten löschen</button>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
