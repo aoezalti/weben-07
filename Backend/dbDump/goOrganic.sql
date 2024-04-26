@@ -24,6 +24,21 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `products`
+--
+
+CREATE TABLE `products` (
+  `productid` int(11) NOT NULL,
+  `productname` varchar(50) NOT NULL,
+  `regularprize` float NOT NULL,
+  `specialprize` float NOT NULL,
+  `insale` tinyint(1) NOT NULL,
+  `imgpath` varchar(50) NOT NULL,
+  `altimg` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+--
 -- Tabellenstruktur für Tabelle `users`
 --
 
@@ -51,6 +66,13 @@ CREATE TABLE `users` (
 --
 
 --
+-- Indizes für die Tabelle `products`
+--
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`productid`);
+
+
+--
 -- Indizes für die Tabelle `users`
 --
 ALTER TABLE `users`
@@ -60,6 +82,13 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
+
+--
+-- AUTO_INCREMENT für Tabelle `products`
+--
+ALTER TABLE `products`
+  MODIFY `productid` int(11) NOT NULL AUTO_INCREMENT;
+
 
 --
 -- AUTO_INCREMENT für Tabelle `users`

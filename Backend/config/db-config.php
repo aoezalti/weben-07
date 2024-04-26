@@ -1,7 +1,6 @@
 <?php
 $servername = "localhost";
-$username = "admin";
-$password = "admin";
-$dbname = "goOrganic";
-
+$username = "goorganic";
+$password = "IIdDeDmKY5kSryXUfsQf1";
+$dbname = "go_Organic";
 ?>
