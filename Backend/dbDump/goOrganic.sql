@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `go_organic`
+-- Datenbank: `go-organic`
 --
 
 -- --------------------------------------------------------
@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `products` (
-  `productid` int(11) NOT NULL,
+  `productid` int(11) NOT NULL AUTO_INCREMENT,
   `productname` varchar(50) NOT NULL,
   `regularprize` float NOT NULL,
   `specialprize` float NOT NULL,
@@ -37,20 +37,21 @@ CREATE TABLE `products` (
   `altimg` varchar(50) NOT NULL,
   `category` varchar(55) NOT NULL,
   `currentreview` float NOT NULL,
-  `allreviews` int(11) NOT NULL
+  `allreviews` int(11) NOT NULL,
+  PRIMARY KEY (`productid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Daten für Tabelle `products`
 --
 
-INSERT INTO `products` (`productid`, `productname`, `regularprize`, `specialprize`, `insale`, `imgpath`, `altimg`, `category`, `currentreview`, `allreviews`) VALUES
-(1, 'Butter', 2.5, 0, 0, '../../Backend/productpictures/butter.jpeg', 'Butter von Hersteller x', 'Milchprodukt', 5, 1),
-(2, 'Wurst', 4.5, 3.5, 1, '../../Backend/productpictures/wurst.jpeg', 'Wurst von Hersteller x', 'Fleischprodukte', 2.5, 2),
-(3, 'Käse', 3.99, 0, 0, '../../Backend/productpictures/kaese.jpeg', 'Käse von Hersteller x', 'Milchprodukt', 4, 5),
-(4, 'Brot', 3.99, 1.99, 0, '../../Backend/productpictures/brot.jpeg', 'Brot von Hersteller x', 'Weizenprodukt', 1.5, 15),
-(5, 'Äpfel', 4.99, 3.99, 0, '../../Backend/productpictures/aepfel.jpeg', 'Äpfel von Hersteller x', 'Obst und Gemüse', 5, 20);
-
+INSERT INTO `products` (`productname`, `regularprize`, `specialprize`, `insale`, `imgpath`, `altimg`, `category`, `currentreview`, `allreviews`) VALUES
+('Butter', 2.5, 0, 0, '../../Backend/productpictures/butter.jpg', 'Butter von Hersteller x', 'Milchprodukte', 5, 1),
+('Käse', 3.99, 0, 0, '../../Backend/productpictures/kaese.jpg', 'Käse von Hersteller x', 'Milchprodukte', 4, 5),
+('Brot', 3.99, 1.99, 0, '../../Backend/productpictures/brot.jpg', 'Brot von Hersteller x', 'Weizenprodukte', 4.5, 15),
+('Paradeiser', 4.99, 0, 0, '../../Backend/productpictures/paradeiser.jpg', 'Paradeiser von Hersteller x', 'Obst und Gemüse', 5, 20),
+('Gemüsemix', 4.99, 3.99, 0, '../../Backend/productpictures/gemuese.jpg', 'Gemüsemix von Hersteller x', 'Obst und Gemüse', 3.5, 20),
+('Äpfel', 3.99, 2.49, 0, '../../Backend/productpictures/aepfel.jpg', 'Äpfel von Hersteller x', 'Obst und Gemüse', 5, 20);
 -- --------------------------------------------------------
 
 --
@@ -58,54 +59,18 @@ INSERT INTO `products` (`productid`, `productname`, `regularprize`, `specialpriz
 --
 
 CREATE TABLE `users` (
-  `userid` int(11) NOT NULL,
+  `userid` int(11) NOT NULL AUTO_INCREMENT,
   `salutation` enum('Frau','Herr','Divers') NOT NULL,
   `firstname` varchar(50) NOT NULL,
   `lastname` varchar(50) NOT NULL,
   `plz` int(4) NOT NULL,
   `city` varchar(50) NOT NULL,
   `mail` varchar(50) NOT NULL,
-  `username` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL UNIQUE,
   `password` varchar(250) NOT NULL,
   `paymentInformation` varchar(11) NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT 0,
-  `address` varchar(80) NOT NULL
+  `address` varchar(80) NOT NULL,
+   PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Indizes der exportierten Tabellen
---
-
---
--- Indizes für die Tabelle `products`
---
-ALTER TABLE `products`
-  ADD PRIMARY KEY (`productid`);
-
---
--- Indizes für die Tabelle `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`userid`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
--- AUTO_INCREMENT für exportierte Tabellen
---
-
---
--- AUTO_INCREMENT für Tabelle `products`
---
-ALTER TABLE `products`
-  MODIFY `productid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT für Tabelle `users`
---
-ALTER TABLE `users`
-  MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
