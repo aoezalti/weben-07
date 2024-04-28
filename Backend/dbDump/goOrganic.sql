@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Erstellungszeit: 21. Apr 2024 um 16:54
--- Server-Version: 10.4.28-MariaDB
--- PHP-Version: 8.2.4
+-- Host: 127.0.0.1
+-- Erstellungszeit: 26. Apr 2024 um 13:41
+-- Server-Version: 10.4.32-MariaDB
+-- PHP-Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,38 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `goOrganic`
+-- Datenbank: `go_organic`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `products`
+--
+
+CREATE TABLE `products` (
+  `productid` int(11) NOT NULL,
+  `productname` varchar(50) NOT NULL,
+  `regularprize` float NOT NULL,
+  `specialprize` float NOT NULL,
+  `insale` tinyint(1) NOT NULL,
+  `imgpath` varchar(50) NOT NULL,
+  `altimg` varchar(50) NOT NULL,
+  `category` varchar(55) NOT NULL,
+  `currentreview` float NOT NULL,
+  `allreviews` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `products`
+--
+
+INSERT INTO `products` (`productid`, `productname`, `regularprize`, `specialprize`, `insale`, `imgpath`, `altimg`, `category`, `currentreview`, `allreviews`) VALUES
+(1, 'Butter', 2.5, 0, 0, '../../Backend/productpictures/butter.jpeg', 'Butter von Hersteller x', 'Milchprodukt', 5, 1),
+(2, 'Wurst', 4.5, 3.5, 1, '../../Backend/productpictures/wurst.jpeg', 'Wurst von Hersteller x', 'Fleischprodukte', 2.5, 2),
+(3, 'Käse', 3.99, 0, 0, '../../Backend/productpictures/kaese.jpeg', 'Käse von Hersteller x', 'Milchprodukt', 4, 5),
+(4, 'Brot', 3.99, 1.99, 0, '../../Backend/productpictures/brot.jpeg', 'Brot von Hersteller x', 'Weizenprodukt', 1.5, 15),
+(5, 'Äpfel', 4.99, 3.99, 0, '../../Backend/productpictures/aepfel.jpeg', 'Äpfel von Hersteller x', 'Obst und Gemüse', 5, 20);
 
 -- --------------------------------------------------------
 
@@ -43,12 +73,14 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Daten für Tabelle `users`
+-- Indizes der exportierten Tabellen
 --
 
 --
--- Indizes der exportierten Tabellen
+-- Indizes für die Tabelle `products`
 --
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`productid`);
 
 --
 -- Indizes für die Tabelle `users`
@@ -60,6 +92,12 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
+
+--
+-- AUTO_INCREMENT für Tabelle `products`
+--
+ALTER TABLE `products`
+  MODIFY `productid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
