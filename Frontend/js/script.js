@@ -1,7 +1,17 @@
 var products = [];
 var cartitemcount = 0;
-var categorys = ["Alle Produkte"];
+var categories = ["Alle Produkte"];
 
+$(document).ready(function() {
+    $("#navbar-placeholder").load("../sites/navbar.html", function() {
+        attachNavbarEvents();
+    });
+
+    $("#content-placeholder").load("home.html", function() {
+        loadProductPage();
+    });
+    $("#footer-placeholder").load("footer.html");
+});
 function getProducts() {
     fetch("../../Backend/logic/productview.php")
     .then(response =>{
@@ -10,8 +20,8 @@ function getProducts() {
         }
         return response.json();
     })
-    .then(productsJason =>{
-        productsJason.forEach(product => {
+    .then(productsJson =>{
+        productsJson.forEach(product => {
             products.push(product);
         })
     })
@@ -21,20 +31,6 @@ function getProducts() {
 
 }
 
-$(document).ready(function() {
-    $("#navbar-placeholder").load("../sites/navbar.html", function() {
-        attachNavbarEvents();
-    });
-    $("#products-placeholder").load("products.html", function() {
-        getProducts();
-        setTimeout(populateProducts, 100);
-        setTimeout(attachCategoryToNavBar,1000);   
-        setTimeout(attachCategoryEvent,100);
-        $(this).show();
-    });
-    $("#footer-placeholder").load("footer.html");
-});
-
 function attachCategoryEvent(obj) {
     if (obj !== undefined) {
         $(".product-card").remove();
@@ -42,12 +38,26 @@ function attachCategoryEvent(obj) {
     }
 }
 
+function loadProductPage() {
+    $("#productPage").on("click", function (event) {
+        event.preventDefault();
+        $("#content-placeholder").load("products.html", function () {
+            getProducts();
+            setTimeout(populateProducts, 100);
+            setTimeout(attachCategoryToNavBar, 100);
+            setTimeout(attachCategoryEvent, 100);
+            $(this).show();
+        });
+    });
+}
+
 function attachNavbarEvents() {
     $("#registerButton").on("click", function (event) {
         event.preventDefault();
-        $("#categorys").slideUp(500);
+        $("#categories").slideUp(500);
         $("#content-placeholder").load("register.html");
     });
+    loadProductPage();
 
     $("#cartButton").attr("ondrop","drop(event)").attr("ondragover","allowDrop(event)")
     $("#cartButton").on("click", function () {
@@ -55,10 +65,10 @@ function attachNavbarEvents() {
     });
 }
 
-
 function populateProducts() {
     products.forEach(product => {
         let productElement = $('.product-template').clone().removeClass('product-template').show();
+        productElement.attr("id", "product-" + product.productid);
         productElement.attr("class","product-card "+product.category).attr("draggable","true").attr("ondragstart","drag(event)");
         //Prüfung ob das Produkt im Angebot ist. Wenn Ja, wird die Markierung gesetzt und der Preis rot markiert
         if(product.insale == 1){
@@ -95,8 +105,13 @@ function populateProducts() {
             cartitemcount++;
             $("#cartItemCount").text(cartitemcount);
         });
-        $('#productgrid').append(productElement).hide();
-        
+        console.log(productElement);
+        console.log(products);
+        // Check if the product is already in the grid
+        if ($("#product-" + product.productid).length === 0) {  // using ID
+            // Append the element only if it does not exist
+            $('#productgrid').append(productElement);
+        }
     });
     $('#productgrid').fadeIn(1000);
 }
@@ -104,7 +119,7 @@ function populateProducts() {
 function populateProductsByCategory(category){
     if (category == "Alle Produkte"){
         populateProducts();
-    }else{
+    } else{
         products.forEach(product => {
             let productElement = $('.product-template').clone().removeClass('product-template').show();
             productElement.attr("class","product-card "+product.category).attr("draggable","true").attr("ondragstart","drag(event)");
@@ -115,7 +130,7 @@ function populateProductsByCategory(category){
                     salebadge.attr("class","badge bg-dark text-white position-absolute").attr("style", "top: 0.5rem; right: 0.5rem").text("Angebot");
                     productElement.find('.card').append(salebadge);
                     productElement.find('.product-price').attr("class","fw-bold text-danger").text(`€${product.specialprize}`);
-                }else{
+                } else{
                     productElement.find('.product-price').text(`€${product.regularprize}`);
                 }
                 productElement.find('.card').attr("id",product.productid);
@@ -152,21 +167,23 @@ function populateProductsByCategory(category){
 
 }
 
-function attachCategoryToNavBar(){    
+function attachCategoryToNavBar(){
+    $("#category").empty();
     products.forEach(product =>{
         //Liste für die Kategorie-Leiste wird gelesen
-        if (!categorys.includes(product.category)){
-            categorys.push(product.category);
+        if (!categories.includes(product.category)){
+            categories.push(product.category);
+
         }
     })
-    let categorysbar = $("<nav>");
+    let categoryBar = $("<nav>");
     let list = $("<ul>");
-    categorysbar.attr("class", "navbar navbar-expand-lg navbar-light bg-light").attr("id","categorys");
+    categoryBar.attr("class", "navbar navbar-expand-lg navbar-light bg-light").attr("id","categories");
     list.attr("class","navbar-nav").attr("id","category");
-    categorysbar.append(list);
-    $("#navbar-placeholder").append(categorysbar);    
+    categoryBar.append(list);
+    $("#navbar-placeholder").append(categoryBar);
     //Kategorie-Liste wird durchgegeangen und die Buttons erzeugt.
-    categorys.forEach(category =>{
+    categories.forEach(category =>{
         var item = $("<li>");
         item.attr("class","nav-item");
         var link = $("<button>");
