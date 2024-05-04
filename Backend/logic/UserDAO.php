@@ -1,6 +1,16 @@
 <?php
-// Include the database configuration file
-require_once '../config/db-config.php';
+
+include_once '../data/db-config.php';
+
+class UserDAO
+{
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = new Database();
+    }
+}
 
 // Retrieve the JSON data sent from the client-side
 $data = json_decode(file_get_contents('php://input'), true);
@@ -26,8 +36,9 @@ $hashedPassword = password_hash($passwort, PASSWORD_DEFAULT);
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if ($conn->connect_error)
+{
+die("Connection failed: " . $conn->connect_error);
 }
 
 // Prepare and bind the SQL statement
@@ -44,4 +55,4 @@ if ($stmt->execute() === TRUE) {
 // Close the statement and connection
 $stmt->close();
 $conn->close();
-?>
+
