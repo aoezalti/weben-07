@@ -11,10 +11,17 @@ $(document).ready(function () {
 });
 
 function attachNavbarEvents() {
+    $("#loginButton").on("click", function (event) {
+        event.preventDefault();
+        $("#categories").slideUp(500);
+
+        window.location.href = "login.html";
+    });
     $("#registerButton").on("click", function (event) {
         event.preventDefault();
         $("#categories").slideUp(500);
-        $("#content-placeholder").load("register.html");
+
+        window.location.href = "register.html";
     });
     $("#cartButton").attr("ondrop", "drop(event)").attr("ondragover", "allowDrop(event)")
     $("#cartButton").on("click", function () {
