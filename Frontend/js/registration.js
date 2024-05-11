@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("Page loaded");
    // TODO: Implement registration form validation and data submission --> Refactor this pls
-    var form = document.querySelector("form");
+   var form = document.querySelector("form");
     
     form.addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission to handle it via JavaScript

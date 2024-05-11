@@ -1,25 +1,15 @@
 $(document).ready(function () {
     var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=products';
-    var categoryDropdown = $('.category-dropdown');
-    $("#productPage-link").on("click", function (event) {
+    /*$("#productPage-link").on("click", function (event) {
         window.location.href = "products.html";
-    });
-
-    categoryDropdown.on('change', function () {
-        var selectedCategory = $(this).val();
-
-        if (selectedCategory !== 'none') {
-            apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=productsByCategory&category=' + selectedCategory;
-        } else {
-          return
-        }
-        getProducts(apiUrl);
-    });
+    });*/
 
     getProducts(apiUrl);
     setTimeout(attachCategoryToNavBar, 100);
     setTimeout(attachCategoryEvent, 100);
+
     $(this).show();
+
     function getProducts(apiUrl) {
         $.ajax({
             type: 'GET',
@@ -30,12 +20,24 @@ $(document).ready(function () {
                 if (response.length > 0) {
                     response.forEach(function (product) {
                         // Create product element based on the HTML template
+                        products.push(product);
                         let productElement = $('.product-template').clone().removeClass('product-template').show();
                         $('.product-template:first').hide();
-                        productElement.attr("id", "product-" + product.productid);
-                        productElement.addClass("product-card " + product.category).attr("draggable", "true").attr("ondragstart", "drag(event)");
+                        productElement.addClass("product-card " + product.category).attr("id", "product-" + product.productid).attr("data-id",product.productid).draggable({
+                            revert: true,
+                            helper: function() {
+                                return $(this).clone().css({
+                                    opacity: 0.5,
+                                    backgroundColor: '#f8f8f8',
+                                    border: '2px dashed #ccc',
+                                    transform: 'scale(0.5)',
+                                    position: 'absolute'
+                                });
+                            },
+                            cursor: 'move'
+                        });
                         // Check if the product is on sale
-                        if (product.insale == 1) {
+                        if (product.insale === 1) {
                             let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
                             productElement.find('.card').append(salebadge);
                             productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprize}`);
@@ -56,11 +58,13 @@ $(document).ready(function () {
                         if (halfStar) {
                             reviewDiv.append('<div class="bi bi-star-half"></div>');
                         }
+                        productElement.find('#productId').text(product.productid);
 
                         // Add click event to add to cart button
                         productElement.find('.btn').on('click', function () {
-                            cartitemcount++;
-                            $("#cartItemCount").text(cartitemcount);
+                            console.log("button pressed")
+                            itemsInBasket.push(product.productid);
+                            $("#cartItemCount").text(itemsInBasket.length);
                         });
 
                         // Append the product element to the product container
@@ -77,23 +81,32 @@ $(document).ready(function () {
             }
         });
     }
+
     function attachCategoryEvent(obj) {
         if (obj !== undefined) {
             $(".product-card").remove();
             populateProductsByCategory(obj.id);
         }
     }
-
+    function populateProductsByCategory(categorie){
+        if (categorie !== 'none') {
+            apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=productsByCategory&category=' + categorie;
+        } else {
+            return
+        }
+        getProducts(apiUrl);
+    }
 
     function attachCategoryToNavBar() {
+        //let categories = [];
         $("#category").empty();
         products.forEach(product => {
             //Liste für die Kategorie-Leiste wird gelesen
             if (!categories.includes(product.category)) {
                 categories.push(product.category);
-
             }
         })
+
         let categoryBar = $("<nav>");
         let list = $("<ul>");
         categoryBar.attr("class", "navbar navbar-expand-lg navbar-light bg-light").attr("id", "categories");
@@ -110,23 +123,13 @@ $(document).ready(function () {
             $("#category").append(item).hide();
         });
 
+       $(".category").on('click', function () {
+           populateProductsByCategory()
+        });
+
         $('.category').on('click', function (event) {
             attachCategoryEvent(this);
         });
         $("#category").slideDown(500);
-    }
-
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
-
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev) {
-        ev.preventDefault();
-        cartitemcount++;
-        $("#cartItemCount").text(cartitemcount);
     }
 });

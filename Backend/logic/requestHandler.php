@@ -47,8 +47,11 @@ class RequestHandler
                     break;
                 case 'user':
                     break;
-                case 'category':
+                case 'productsByCategory':
                     $response = $this->productDAO->getProductsByCategory(isset($_GET['category']) ? $_GET['category'] : '');
+                    break;
+                case 'productsById':
+                    $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
                     break;
                 default:
                     $response = null;
