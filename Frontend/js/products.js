@@ -63,8 +63,8 @@ $(document).ready(function () {
                         // Add click event to add to cart button
                         productElement.find('.btn').on('click', function () {
                             console.log("button pressed")
-                            itemsInBasket.push(product.productid);
-                            $("#cartItemCount").text(itemsInBasket.length);
+                            itemsIdInChart.push(product.productid);
+                            $("#cartItemCount").text(itemsIdInChart.length);
                         });
 
                         // Append the product element to the product container

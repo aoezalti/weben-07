@@ -11,17 +11,19 @@
 
     </div>
 </div>
-<div class="col-md-4 summary">
+<div class="col-md-12 summary">
     <div><h5><b>Zusammenfassung</b></h5></div>
     <hr>
     <div class="row">
-        <div class="col" id="itemCount" style="padding-left:0;"></div>
+        <div class="col" id="itemCount" style="padding-left:1;"></div>
         <div class="col text-right" id="amount"></div>
     </div>
     <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
-        <div class="col">Gesamtpreis</div>
-        <div class="col text-right" id="totalamount"></div>
+        <div class="col"><b>Gesamtpreis</b></div>
+        <div class="col-md-6 text-center" id="totalamount"></div>
     </div>
-    <button class="btn">Zur Kassa</button>
+    <div class="col-md-12 text-center">
+        <button class=" btn btn-outline-dark mt-auto" id="checkout">Zur Kassa</button>
+    </div>
 </div>
 <script src="../js/chart.js" defer></script>
