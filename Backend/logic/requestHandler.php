@@ -7,6 +7,7 @@ class RequestHandler
     private $productDAO;
     private $userDAO;
 
+
     public function __construct()
     {
         $this->productDAO = new ProductDAO();

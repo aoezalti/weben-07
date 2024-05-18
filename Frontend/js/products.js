@@ -40,9 +40,9 @@ $(document).ready(function () {
                         if (product.insale === 1) {
                             let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
                             productElement.find('.card').append(salebadge);
-                            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprize}`);
+                            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprice}`);
                         } else {
-                            productElement.find('.product-price').text(`€${product.regularprize}`);
+                            productElement.find('.product-price').text(`€${product.regularprice}`);
                         }
                         productElement.find('.card').attr("id", product.productid);
                         productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
@@ -63,8 +63,8 @@ $(document).ready(function () {
                         // Add click event to add to cart button
                         productElement.find('.btn').on('click', function () {
                             console.log("button pressed")
-                            itemsIdInChart.push(product.productid);
-                            $("#cartItemCount").text(itemsIdInChart.length);
+                            itemsIdInCart.push(product.productid);
+                            $("#cartItemCount").text(itemsIdInCart.length);
                         });
 
                         // Append the product element to the product container

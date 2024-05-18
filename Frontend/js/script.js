@@ -1,10 +1,7 @@
 var products = [];
 var categories = ["Alle Produkte"];
-var itemsIdInChart = [];
-var productsInChart = [];
-var amount = 0.0;
-var itemsList = [];
-var itemsIdList = [];
+var itemsIdInCart = [];
+
 
 $(document).ready(function () {
     $("#navbar-placeholder").load("../sites/navbar.html", function () {
@@ -25,21 +22,24 @@ function attachNavbarEvents() {
         tolerance: 'pointer',
         drop: function (event, ui) {
             var product = ui.draggable;
-            itemsIdInChart.push(product.data('id'))
-            console.log(itemsIdInChart);
-            $("#cartItemCount").text(itemsIdInChart.length);
+            itemsIdInCart.push(product.data('id'))
+            console.log(itemsIdInCart);
+            $("#cartItemCount").text(itemsIdInCart.length);
 
         }
     })
     $("#cartButton").on("click", function () {
-        console.log("Cart button clicked!");
-        productsInChart = [];
-        setTimeout(getProductsInChart(itemsIdInChart),100);
-        if(itemsIdInChart.length == 0){
+        $("#cart-placeholder").text('');
+        if(itemsIdInCart.length == 0){
             alert('Keine Artikel im Warenkorb!');
         }else{
-            $("#cart-placeholder").load("cart.html");
-            $("#cartModal").modal("show");
+            try{
+                getProductsInCart(itemsIdInCart);
+                $("#cart-placeholder").load("cart.html");
+                $("#cartModal").modal("show");
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Produkte:', error);
+            }
         }
     });
 
