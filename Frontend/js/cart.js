@@ -73,6 +73,9 @@ function attachChartEvents(){
             success: function(response) {
                 console.log('Daten erfolgreich gesendet!', response);
                 $("#content-placeholder").load("checkout.html");
+                // SQL-Statement für Datenabruf:
+                // Select u.salutation, u.firstname, u.lastname, p.productname, p.regularprice, p.specialprice, p.insale, p.imgpath
+                // from users u,products p, orders o where u.userid = o.userid and p.productid = o.productid and o.state = 'checkout';
             },
             error: function(xhr, status, error) {
                 console.error('Fehler beim Senden der Daten:', error);

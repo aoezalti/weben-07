@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `orders` (
                           `orderid` int(11) NOT NULL,
                           `userid` int(11) DEFAULT NULL,
-                          `produktid` int(11) DEFAULT NULL,
+                          `productid` int(11) DEFAULT NULL,
                           `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
                           `state` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -39,7 +39,7 @@ CREATE TABLE `orders` (
 -- Daten für Tabelle `orders`
 --
 
-INSERT INTO `orders` (`orderid`, `userid`, `produktid`, `order_date`, `state`) VALUES
+INSERT INTO `orders` (`orderid`, `userid`, `productid`, `order_date`, `state`) VALUES
                                                                                    (1, 1, 1, '2024-05-19 05:00:00', 'checkout'),
                                                                                    (2, 1, 1, '2024-05-19 05:00:00', 'checkout'),
                                                                                    (3, 1, 2, '2024-05-19 05:00:00', 'checkout'),
