@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 18. Mai 2024 um 18:04
+-- Erstellungszeit: 19. Mai 2024 um 07:19
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.0.30
 
@@ -31,8 +31,22 @@ CREATE TABLE `orders` (
                           `orderid` int(11) NOT NULL,
                           `userid` int(11) DEFAULT NULL,
                           `produktid` int(11) DEFAULT NULL,
-                          `order_date` timestamp NOT NULL DEFAULT current_timestamp()
+                          `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
+                          `state` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `orders`
+--
+
+INSERT INTO `orders` (`orderid`, `userid`, `produktid`, `order_date`, `state`) VALUES
+                                                                                   (1, 1, 1, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (2, 1, 1, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (3, 1, 2, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (4, 1, 3, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (5, 1, 3, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (6, 1, 4, '2024-05-19 05:00:00', 'checkout'),
+                                                                                   (7, 1, 5, '2024-05-18 05:00:00', 'paid');
 
 -- --------------------------------------------------------
 
@@ -126,7 +140,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT für Tabelle `orders`
 --
 ALTER TABLE `orders`
-    MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT;
+    MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`

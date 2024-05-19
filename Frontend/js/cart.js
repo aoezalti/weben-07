@@ -72,6 +72,7 @@ function attachChartEvents(){
             data: JSON.stringify(itemsIdInCart),
             success: function(response) {
                 console.log('Daten erfolgreich gesendet!', response);
+                $("#content-placeholder").load("checkout.html");
             },
             error: function(xhr, status, error) {
                 console.error('Fehler beim Senden der Daten:', error);
