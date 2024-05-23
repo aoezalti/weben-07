@@ -1,6 +1,7 @@
 <?php
 
 include_once './ProductDAO.php';
+include_once './cartDAO.php';
 
 class RequestHandler
 {
@@ -12,6 +13,7 @@ class RequestHandler
     {
         $this->productDAO = new ProductDAO();
         // $this->userDAO = new UserDAO();
+        $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
 
@@ -33,6 +35,19 @@ class RequestHandler
             default:
                 $this->respond(500, "Invalid Request");
                 break;
+        }
+    }
+
+    public function handlePost()
+    {
+        try {
+            $type = isset($_POST['type']);
+            switch ($type) {
+                case 'orders':
+                    $this->cartDAO->setOrder($data);
+            }
+        }catch (Exception $e) {
+            $this->respond(500, array('status' => 'error', 'message' => $e->getMessage()));
         }
     }
 

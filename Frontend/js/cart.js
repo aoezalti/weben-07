@@ -15,12 +15,17 @@ function attachChartEvents(){
         if(window.confirm('Möchten Sie das Item entfernen?')){
             productsInCart.forEach(function(product) {
                 if (product.productid == productid) {
+                    if (itemsIdInCart.includes(productid)){
+                        itemsIdInCart.pop(productid);
+                    }
                     productsInCart.pop(product);
                 }
             });
             itemsList = [];
-            itemsIdInCart = []
             getItemsList();
+            console.log(itemsList);
+            console.log(itemsIdInCart);
+            console.log(productsInCart);
         }
         buildChart();
     });
@@ -66,7 +71,7 @@ function attachChartEvents(){
 
     $('#checkout').on('click', function() {
         $.ajax({
-            url: '../../Backend/logic/cartDAO.php',
+            url: 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=order',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(itemsIdInCart),
@@ -119,6 +124,7 @@ function calculateItemPrice(product){
 
 function buildChart(){
     $('#itemsList').text('');
+    totalAmount = 0.0;
     itemsList.forEach(function (product){
         calculateItemPrice(product);
         let countedItems = countSameItems(product.productid);
