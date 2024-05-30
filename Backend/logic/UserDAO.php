@@ -1,6 +1,6 @@
 <?php
 
-include_once '../data/db-config.php';
+require_once('../data/Database.php');
 
 class UserDAO
 {
@@ -10,49 +10,74 @@ class UserDAO
     {
         $this->db = new Database();
     }
+
+    public function registerUser($userData)
+    {
+       try {
+            $email = $userData['email'];
+            $anrede = $userData['anrede'];
+            $vorname = $userData['vorname'];
+            $nachname = $userData['nachname'];
+            $adresse = $userData['adresse'];
+            $plz = $userData['plz'];
+            $ort = $userData['ort'];
+            $benutzername = $userData['benutzername'];
+            $passwort = $userData['passwort'];
+            $zahlungsinformationen = $userData['zahlungsinformationen'];
+
+            $hashedPassword = password_hash($passwort, PASSWORD_DEFAULT);
+
+            $sql = "INSERT INTO users (mail, salutation, firstname, lastname, address, plz, city, username, password, paymentInformation) VALUES (:email, :anrede, :vorname, :nachname, :adresse, :plz, :ort, :benutzername, :hashedPassword, :zahlungsinformationen)";
+            $stmt = $this->db->prepare($sql);
+
+            // Binding parameters
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':anrede', $anrede);
+            $stmt->bindParam(':vorname', $vorname);
+            $stmt->bindParam(':nachname', $nachname);
+            $stmt->bindParam(':adresse', $adresse);
+            $stmt->bindParam(':plz', $plz);
+            $stmt->bindParam(':ort', $ort);
+            $stmt->bindParam(':benutzername', $benutzername);
+            $stmt->bindParam(':hashedPassword', $hashedPassword);
+            $stmt->bindParam(':zahlungsinformationen', $zahlungsinformationen);
+
+            $stmt->execute();
+            return ["success" => "Registration successful!"];
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function checkUser($userData)
+    {
+        try {
+            $user = $userData['user'];
+            $password = $userData['password']; // Get the plain text password
+            $sql = "SELECT * FROM users WHERE username = :username";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':username', $user);
+            $stmt->execute();
+
+            $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($userRecord) {
+                if (password_verify($password, $userRecord['password'])) {
+
+                    return ["success" => "Login successful!"];
+                } else {
+
+                    return ["success" => false, "message" => "Incorrect password"];
+                }
+            } else {
+
+                return ["success" => false, "message" => "User not found"];
+            }
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+
+
 }
-
-// Retrieve the JSON data sent from the client-side
-$data = json_decode(file_get_contents('php://input'), true);
-
-
-// Extract data from the JSON object
-$email = $data['email'];
-$anrede = $data['anrede'];
-$vorname = $data['vorname'];
-$nachname = $data['nachname'];
-$adresse = $data['adresse'];
-$plz = $data['plz'];
-$ort = $data['ort'];
-$benutzername = $data['benutzername'];
-$passwort = $data['passwort'];
-$zahlungsinformationen = $data['zahlungsinformationen'];
-
-
-// Hash the password
-$hashedPassword = password_hash($passwort, PASSWORD_DEFAULT);
-
-// Create a new connection to the database
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error)
-{
-die("Connection failed: " . $conn->connect_error);
-}
-
-// Prepare and bind the SQL statement
-$stmt = $conn->prepare("INSERT INTO users (mail, salutation, firstname, lastname, address, plz, city, username, password, paymentInformation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssssssss", $email, $anrede, $vorname, $nachname, $adresse, $plz, $ort, $benutzername, $hashedPassword, $zahlungsinformationen);
-
-// Execute the statement
-if ($stmt->execute() === TRUE) {
-    echo "Registration successful!";
-} else {
-    echo "Error: " . $stmt->error;
-}
-
-// Close the statement and connection
-$stmt->close();
-$conn->close();
-

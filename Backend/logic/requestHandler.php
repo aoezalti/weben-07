@@ -2,6 +2,7 @@
 
 include_once './ProductDAO.php';
 
+
 class RequestHandler
 {
     private $productDAO;
@@ -10,7 +11,7 @@ class RequestHandler
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-        // $this->userDAO = new UserDAO();
+
         $this->processRequest();
     }
 
@@ -27,7 +28,7 @@ class RequestHandler
                 $this->handleGet();
                 break;
             case 'DELETE':
-                $this->handleDelete();
+                //$this->handleDelete();
                 break;
             default:
                 $this->respond(500, "Invalid Request");
@@ -64,6 +65,67 @@ class RequestHandler
         }
     }
 
+    public function handlePost()
+    {
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $type = isset($data['type']) ? $data['type'] : '';
+            $userData = isset($data['userData']) ? $data['userData'] : [];
+
+            $response = null;
+
+            //sanitization
+            foreach ($userData as $key => $value) {
+                $userData[$key] = htmlspecialchars(strip_tags($value));
+            }
+            switch ($type) {
+                case 'register':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    if (!empty($userData)) {
+                        $response = $this->userDAO->registerUser($userData);
+                        //set login
+                        if (isset($response["success"])) {
+                            $_SESSION["loggedIn"] = true;
+                        }
+                    }
+                    break;
+                case 'login':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    if (!empty($userData)) {
+                        $response = $this->userDAO->checkUser($userData);
+                        if (isset($response["success"])) {
+                            //set login
+                            $_SESSION["loggedIn"] = true;
+                            $_SESSION["username"] = $userData['user'];
+                        }
+                    }
+                    break;
+                case 'logout':
+                    $_SESSION = array();
+                    session_unset();
+                    session_destroy();
+                    $response = ["success" => "Logout successful!"];
+                    break;
+                default:
+                    $response = array('status' => 'error', 'message' => 'No valid type provided');
+                    break;
+                case 'loginStatus':
+                    $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
+                    break;
+            }
+            if ($response !== null) {
+                $this->respond(200, $response);
+            } else {
+                $this->respond(500, array('status' => 'error', 'message' => 'Error processing request', 'response' => $response));
+            }
+        } catch (Exception $e) {
+            $this->respond(500, array('status' => 'error', 'message' => $e->getMessage()));
+        }
+    }
+
+
     public function respond($status, $data = null)
     {
         // Set CORS headers
@@ -72,7 +134,7 @@ class RequestHandler
         header("Access-Control-Allow-Headers: Content-Type"); // Allow the Content-Type header
 
         http_response_code($status);
-        header("Content-Type: application/json;charset=utf-8");
+        header("Content-Type: application/json");
 
         if ($data !== null) {
             echo json_encode($data);
