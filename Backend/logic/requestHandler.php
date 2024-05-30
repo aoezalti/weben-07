@@ -28,7 +28,7 @@ class RequestHandler
                 $this->handleGet();
                 break;
             case 'DELETE':
-                $this->handleDelete();
+                //$this->handleDelete();
                 break;
             default:
                 $this->respond(500, "Invalid Request");
@@ -83,9 +83,9 @@ class RequestHandler
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
-                        $response = $this -> userDAO->registerUser($userData);
+                        $response = $this->userDAO->registerUser($userData);
                         //set login
-                        if(isset($response["success"])){
+                        if (isset($response["success"])) {
                             $_SESSION["loggedIn"] = true;
                         }
                     }
@@ -94,21 +94,31 @@ class RequestHandler
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
-                        $response = $this ->userDAO->checkUser($userData);
-                        if(isset($response["success"])){
+                        $response = $this->userDAO->checkUser($userData);
+                        if (isset($response["success"])) {
                             //set login
                             $_SESSION["loggedIn"] = true;
+                            $_SESSION["username"] = $userData['user'];
                         }
                     }
                     break;
+                case 'logout':
+                    $_SESSION = array();
+                    session_unset();
+                    session_destroy();
+                    $response = ["success" => "Logout successful!"];
+                    break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
+                    break;
+                case 'loginStatus':
+                    $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
                     break;
             }
             if ($response !== null) {
                 $this->respond(200, $response);
             } else {
-                $this->respond(500, array('status' => 'error', 'message' => 'Error processing request','response' => $response));
+                $this->respond(500, array('status' => 'error', 'message' => 'Error processing request', 'response' => $response));
             }
         } catch (Exception $e) {
             $this->respond(500, array('status' => 'error', 'message' => $e->getMessage()));
