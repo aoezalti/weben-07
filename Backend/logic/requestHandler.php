@@ -1,6 +1,7 @@
 <?php
 
 include_once './ProductDAO.php';
+include_once './cartDAO.php';
 
 
 class RequestHandler
@@ -8,10 +9,12 @@ class RequestHandler
     private $productDAO;
     private $userDAO;
 
+
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-
+        // $this->userDAO = new UserDAO();
+        $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
 
@@ -36,6 +39,19 @@ class RequestHandler
         }
     }
 
+    public function handlePost()
+    {
+        try {
+            $type = isset($_POST['type']);
+            switch ($type) {
+                case 'orders':
+                    $this->cartDAO->setOrder($data);
+            }
+        }catch (Exception $e) {
+            $this->respond(500, array('status' => 'error', 'message' => $e->getMessage()));
+        }
+    }
+
     public function handleGet()
     {
         try {
@@ -48,8 +64,11 @@ class RequestHandler
                     break;
                 case 'user':
                     break;
-                case 'category':
+                case 'productsByCategory':
                     $response = $this->productDAO->getProductsByCategory(isset($_GET['category']) ? $_GET['category'] : '');
+                    break;
+                case 'productsById':
+                    $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
                     break;
                 default:
                     $response = null;
