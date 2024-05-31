@@ -353,17 +353,10 @@ button,
 select,
 optgroup,
 textarea {
-  margin: 10px;
+  margin: 0;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
-}
-.draggable-product {
-  opacity: 0.5;
-  background-color: #f8f8f8;
-  border: 2px dashed #ccc;
-  transform: scale(0.5);
-  position: absolute;
 }
 
 button,
@@ -5261,13 +5254,13 @@ textarea.form-control-lg {
 
 .modal {
   --bs-modal-zindex: 1055;
-  --bs-modal-width: 750px;
+  --bs-modal-width: 500px;
   --bs-modal-padding: 1rem;
   --bs-modal-margin: 0.5rem;
   --bs-modal-color: ;
   --bs-modal-bg: #fff;
   --bs-modal-border-color: var(--bs-border-color-translucent);
-  --bs-modal-border-width: 0px;
+  --bs-modal-border-width: 1px;
   --bs-modal-border-radius: 0.5rem;
   --bs-modal-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   --bs-modal-inner-border-radius: calc(0.5rem - 1px);

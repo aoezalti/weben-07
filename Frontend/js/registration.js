@@ -1,5 +1,6 @@
 $(document).ready(function () {
     var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=register';
+
     $('form').on('submit', function (event) {
         event.preventDefault(); // Prevent form submission
         var userData = {
