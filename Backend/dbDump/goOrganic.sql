@@ -117,7 +117,7 @@ INSERT INTO `users` (`userid`, `salutation`, `firstname`, `lastname`, `plz`, `ci
 ALTER TABLE `orders`
     ADD PRIMARY KEY (`orderid`),
   ADD KEY `userid` (`userid`),
-  ADD KEY `produktid` (`produktid`);
+  ADD KEY `productid` (`productid`);
 
 --
 -- Indizes für die Tabelle `products`
@@ -163,7 +163,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `orders`
     ADD CONSTRAINT `order_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`),
-  ADD CONSTRAINT `order_ibfk_2` FOREIGN KEY (`produktid`) REFERENCES `products` (`productid`);
+  ADD CONSTRAINT `order_ibfk_2` FOREIGN KEY (`productid`) REFERENCES `products` (`productid`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -358,6 +358,13 @@ textarea {
   font-size: inherit;
   line-height: inherit;
 }
+.draggable-product {
+  opacity: 0.5;
+  background-color: #f8f8f8;
+  border: 2px dashed #ccc;
+  transform: scale(0.5);
+  position: absolute;
+}
 
 button,
 select {

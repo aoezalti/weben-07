@@ -10,6 +10,80 @@ $(document).ready(function () {
 
     $(this).show();
 
+    function createProductElement(product) {
+        let productElement = createBaseProductElement(product);
+        productElement = addProductImage(productElement, product);
+        productElement = addProductName(productElement, product);
+        productElement = addProductPrice(productElement, product);
+        productElement = addProductReview(productElement, product);
+        productElement = addCartButton(productElement, product);
+        return productElement;
+    }
+
+    function createBaseProductElement(product) {
+        let productElement = $('.product-template').clone().removeClass('product-template').show();
+        $('.product-template:first').hide();
+        productElement.addClass("product-card " + product.category).attr("id", "product-" + product.productid).attr("data-id",product.productid).draggable({
+            revert: true,
+            helper: function() {
+                return $(this).clone().addClass('draggable-product');
+            },
+            cursor: 'move'
+        });
+        return productElement;
+    }
+
+    function addProductImage(productElement, product) {
+        productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
+        return productElement;
+    }
+
+    function addProductName(productElement, product) {
+        productElement.find('.product-name').text(product.productname);
+        return productElement;
+    }
+
+    function addProductPrice(productElement, product) {
+        if (product.insale === 1) {
+            let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
+            productElement.find('.card').append(salebadge);
+            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprice}`);
+        } else {
+            productElement.find('.product-price').text(`€${product.regularprice}`);
+        }
+        return productElement;
+    }
+
+    function addProductReview(productElement, product) {
+        let reviewDiv = productElement.find('.product-review');
+        let fullStars = parseInt(product.currentreview);
+        let halfStar = product.currentreview % 1 !== 0;
+        for (let i = 0; i < fullStars; i++) {
+            reviewDiv.append('<div class="bi-star-fill"></div>');
+        }
+        if (halfStar) {
+            reviewDiv.append('<div class="bi bi-star-half"></div>');
+        }
+        return productElement;
+    }
+
+    function addCartButton(productElement, product) {
+        productElement.find('.btn').on('click', function () {
+            console.log("button pressed")
+            itemsIdInCart.push(product.productid);
+            $("#cartItemCount").text(itemsIdInCart.length);
+        });
+        return productElement;
+    }
+
+    function updateUI(products) {
+        products.forEach(function (product) {
+            let productElement = createProductElement(product);
+            $('#productgrid').append(productElement);
+        });
+        $('#productgrid').fadeIn(1000);
+    }
+
     function getProducts(apiUrl) {
         $.ajax({
             type: 'GET',
@@ -19,65 +93,16 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.length > 0) {
                     response.forEach(function (product) {
-                        // Create product element based on the HTML template
+                        // Create product element based on the HTML template in products.html
                         products.push(product);
-                        let productElement = $('.product-template').clone().removeClass('product-template').show();
-                        $('.product-template:first').hide();
-                        productElement.addClass("product-card " + product.category).attr("id", "product-" + product.productid).attr("data-id",product.productid).draggable({
-                            revert: true,
-                            helper: function() {
-                                return $(this).clone().css({
-                                    opacity: 0.5,
-                                    backgroundColor: '#f8f8f8',
-                                    border: '2px dashed #ccc',
-                                    transform: 'scale(0.5)',
-                                    position: 'absolute'
-                                });
-                            },
-                            cursor: 'move'
-                        });
-                        // Check if the product is on sale
-                        if (product.insale === 1) {
-                            let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
-                            productElement.find('.card').append(salebadge);
-                            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprice}`);
-                        } else {
-                            productElement.find('.product-price').text(`€${product.regularprice}`);
-                        }
-                        productElement.find('.card').attr("id", product.productid);
-                        productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
-                        productElement.find('.product-name').text(product.productname);
-
-                        // Add review stars
-                        let reviewDiv = productElement.find('.product-review');
-                        let fullStars = parseInt(product.currentreview);
-                        let halfStar = product.currentreview % 1 !== 0;
-                        for (let i = 0; i < fullStars; i++) {
-                            reviewDiv.append('<div class="bi-star-fill"></div>');
-                        }
-                        if (halfStar) {
-                            reviewDiv.append('<div class="bi bi-star-half"></div>');
-                        }
-                        productElement.find('#productId').text(product.productid);
-
-                        // Add click event to add to cart button
-                        productElement.find('.btn').on('click', function () {
-                            console.log("button pressed")
-                            itemsIdInCart.push(product.productid);
-                            $("#cartItemCount").text(itemsIdInCart.length);
-                        });
-
-                        // Append the product element to the product container
-                        $('#productgrid').append(productElement);
-                        $('#productgrid').fadeIn(1000);
                     });
-
+                    updateUI(products);
                 } else {
                     console.log("Keine Produkte gefunden");
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('AJAX request failed:', textStatus, errorThrown); // Debugging line
+                console.log('AJAX request failed:', textStatus, errorThrown);
             }
         });
     }
@@ -88,13 +113,14 @@ $(document).ready(function () {
             populateProductsByCategory(obj.id);
         }
     }
-    function populateProductsByCategory(categorie){
-        if (categorie !== 'none') {
-            apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=productsByCategory&category=' + categorie;
-        } else {
-            return
+
+    function populateProductsByCategory(category){
+        if (category === 'Alle Produkte') {
+            updateUI(products);
+        } else if (category !== 'none') {
+            let filteredProducts = products.filter(product => product.category === category);
+            updateUI(filteredProducts);
         }
-        getProducts(apiUrl);
     }
 
     function attachCategoryToNavBar() {
