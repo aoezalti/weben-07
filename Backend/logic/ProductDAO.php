@@ -24,26 +24,10 @@ class ProductDAO
     }
 
     public function getProductsByCategory($category) {
-        if($category == "Alle Produkte"){
-           return $this->getProducts();
-        }
         $sql = "SELECT * FROM products WHERE category = :category;";
         try {
             $stmt = $this->db->conn->prepare($sql);
             $stmt->bindParam(':category', $category);
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $result;
-        } catch (PDOException $e) {
-            return null;
-        }
-    }
-
-    public function getProductsById($id) {
-        $sql = "SELECT * FROM products WHERE productid = :id;";
-        try {
-            $stmt = $this->db->conn->prepare($sql);
-            $stmt->bindParam(':id', $id);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;

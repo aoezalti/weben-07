@@ -1,89 +1,25 @@
 $(document).ready(function () {
     var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=products';
-    /*$("#productPage-link").on("click", function (event) {
+    var categoryDropdown = $('.category-dropdown');
+    $("#productPage-link").on("click", function (event) {
         window.location.href = "products.html";
-    });*/
+    });
+
+    categoryDropdown.on('change', function () {
+        var selectedCategory = $(this).val();
+
+        if (selectedCategory !== 'none') {
+            apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=productsByCategory&category=' + selectedCategory;
+        } else {
+          return
+        }
+        getProducts(apiUrl);
+    });
 
     getProducts(apiUrl);
     setTimeout(attachCategoryToNavBar, 100);
     setTimeout(attachCategoryEvent, 100);
-
     $(this).show();
-
-    function createProductElement(product) {
-        let productElement = createBaseProductElement(product);
-        productElement = addProductImage(productElement, product);
-        productElement = addProductName(productElement, product);
-        productElement = addProductPrice(productElement, product);
-        productElement = addProductReview(productElement, product);
-        productElement = addCartButton(productElement, product);
-        return productElement;
-    }
-
-    function createBaseProductElement(product) {
-        let productElement = $('.product-template').clone().removeClass('product-template').show();
-        $('.product-template:first').hide();
-        productElement.addClass("product-card " + product.category).attr("id", "product-" + product.productid).attr("data-id",product.productid).draggable({
-            revert: true,
-            helper: function() {
-                return $(this).clone().addClass('draggable-product');
-            },
-            cursor: 'move'
-        });
-        return productElement;
-    }
-
-    function addProductImage(productElement, product) {
-        productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
-        return productElement;
-    }
-
-    function addProductName(productElement, product) {
-        productElement.find('.product-name').text(product.productname);
-        return productElement;
-    }
-
-    function addProductPrice(productElement, product) {
-        if (product.insale === 1) {
-            let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
-            productElement.find('.card').append(salebadge);
-            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprice}`);
-        } else {
-            productElement.find('.product-price').text(`€${product.regularprice}`);
-        }
-        return productElement;
-    }
-
-    function addProductReview(productElement, product) {
-        let reviewDiv = productElement.find('.product-review');
-        let fullStars = parseInt(product.currentreview);
-        let halfStar = product.currentreview % 1 !== 0;
-        for (let i = 0; i < fullStars; i++) {
-            reviewDiv.append('<div class="bi-star-fill"></div>');
-        }
-        if (halfStar) {
-            reviewDiv.append('<div class="bi bi-star-half"></div>');
-        }
-        return productElement;
-    }
-
-    function addCartButton(productElement, product) {
-        productElement.find('.btn').on('click', function () {
-            console.log("button pressed")
-            itemsIdInCart.push(product.productid);
-            $("#cartItemCount").text(itemsIdInCart.length);
-        });
-        return productElement;
-    }
-
-    function updateUI(products) {
-        products.forEach(function (product) {
-            let productElement = createProductElement(product);
-            $('#productgrid').append(productElement);
-        });
-        $('#productgrid').fadeIn(1000);
-    }
-
     function getProducts(apiUrl) {
         $.ajax({
             type: 'GET',
@@ -93,20 +29,54 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.length > 0) {
                     response.forEach(function (product) {
-                        // Create product element based on the HTML template in products.html
-                        products.push(product);
+                        // Create product element based on the HTML template
+                        let productElement = $('.product-template').clone().removeClass('product-template').show();
+                        $('.product-template:first').hide();
+                        productElement.attr("id", "product-" + product.productid);
+                        productElement.addClass("product-card " + product.category).attr("draggable", "true").attr("ondragstart", "drag(event)");
+                        // Check if the product is on sale
+                        if (product.insale == 1) {
+                            let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
+                            productElement.find('.card').append(salebadge);
+                            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprize}`);
+                        } else {
+                            productElement.find('.product-price').text(`€${product.regularprize}`);
+                        }
+                        productElement.find('.card').attr("id", product.productid);
+                        productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
+                        productElement.find('.product-name').text(product.productname);
+
+                        // Add review stars
+                        let reviewDiv = productElement.find('.product-review');
+                        let fullStars = parseInt(product.currentreview);
+                        let halfStar = product.currentreview % 1 !== 0;
+                        for (let i = 0; i < fullStars; i++) {
+                            reviewDiv.append('<div class="bi-star-fill"></div>');
+                        }
+                        if (halfStar) {
+                            reviewDiv.append('<div class="bi bi-star-half"></div>');
+                        }
+
+                        // Add click event to add to cart button
+                        productElement.find('.btn').on('click', function () {
+                            cartitemcount++;
+                            $("#cartItemCount").text(cartitemcount);
+                        });
+
+                        // Append the product element to the product container
+                        $('#productgrid').append(productElement);
+                        $('#productgrid').fadeIn(1000);
                     });
-                    updateUI(products);
+
                 } else {
                     console.log("Keine Produkte gefunden");
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('AJAX request failed:', textStatus, errorThrown);
+                console.log('AJAX request failed:', textStatus, errorThrown); // Debugging line
             }
         });
     }
-
     function attachCategoryEvent(obj) {
         if (obj !== undefined) {
             $(".product-card").remove();
@@ -114,25 +84,16 @@ $(document).ready(function () {
         }
     }
 
-    function populateProductsByCategory(category){
-        if (category === 'Alle Produkte') {
-            updateUI(products);
-        } else if (category !== 'none') {
-            let filteredProducts = products.filter(product => product.category === category);
-            updateUI(filteredProducts);
-        }
-    }
 
     function attachCategoryToNavBar() {
-        //let categories = [];
         $("#category").empty();
         products.forEach(product => {
             //Liste für die Kategorie-Leiste wird gelesen
             if (!categories.includes(product.category)) {
                 categories.push(product.category);
+
             }
         })
-
         let categoryBar = $("<nav>");
         let list = $("<ul>");
         categoryBar.attr("class", "navbar navbar-expand-lg navbar-light bg-light").attr("id", "categories");
@@ -149,13 +110,23 @@ $(document).ready(function () {
             $("#category").append(item).hide();
         });
 
-       $(".category").on('click', function () {
-           populateProductsByCategory()
-        });
-
         $('.category').on('click', function (event) {
             attachCategoryEvent(this);
         });
         $("#category").slideDown(500);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        cartitemcount++;
+        $("#cartItemCount").text(cartitemcount);
     }
 });
