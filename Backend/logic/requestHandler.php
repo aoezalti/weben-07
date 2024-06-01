@@ -38,20 +38,6 @@ class RequestHandler
                 break;
         }
     }
-
-    public function handlePost()
-    {
-        try {
-            $type = isset($_POST['type']);
-            switch ($type) {
-                case 'orders':
-                    $this->cartDAO->setOrder($data);
-            }
-        }catch (Exception $e) {
-            $this->respond(500, array('status' => 'error', 'message' => $e->getMessage()));
-        }
-    }
-
     public function handleGet()
     {
         try {
@@ -127,6 +113,8 @@ class RequestHandler
                     session_destroy();
                     $response = ["success" => "Logout successful!"];
                     break;
+                case 'orders':
+                    $this->cartDAO->setOrder($data);
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
                     break;

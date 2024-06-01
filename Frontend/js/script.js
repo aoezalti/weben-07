@@ -2,7 +2,6 @@ var products = [];
 var categories = ["Alle Produkte"];
 var itemsIdInCart = [];
 
-
 $(document).ready(function () {
     $("#navbar-placeholder").load("../sites/navbar.html", function () {
         attachNavbarEvents();
@@ -36,7 +35,6 @@ function attachNavbarEvents() {
 
         }
     })
-    $("#cartButton").attr("ondrop", "drop(event)")
     $("#cartButton").on("click", function () {
         $("#cart-placeholder").text('');
         if(itemsIdInCart.length == 0){
