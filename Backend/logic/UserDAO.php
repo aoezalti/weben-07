@@ -13,7 +13,7 @@ class UserDAO
 
     public function registerUser($userData)
     {
-       try {
+        try {
             $email = $userData['email'];
             $anrede = $userData['anrede'];
             $vorname = $userData['vorname'];
