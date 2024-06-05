@@ -41,3 +41,27 @@
         </button>
     </div>
 </nav>
+
+<!-- Cart Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Warenkorb</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="cartItemsList" class="list-group">
+                    <!-- Cart items will be dynamically populated here -->
+                </ul>
+                <div class="total-price-container text-end mt-3">
+                    <span id="total-price" class="fw-bold">Summe: €0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                <button class="btn btn-outline-dark mt-auto" id="checkoutButton" onclick="checkLoginStatusBeforeCheckout()">Zur Kassa</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,254 +1,165 @@
-var itemprice = 0;
-var totalAmount = 0.0;
-var itemsList = [];
-var productsInCart = [];
+var cart = [];
 
 $(document).ready(function () {
-    getItemsList();
-    buildChart();
+    loadCart();
+    updateCartCount();
+    updateTotalPrice(); // Update the total price on page load
 
-});
+    $(document).on('click', '.add-to-cart', function () {
+        const productId = $(this).data('id');
+        const product = getProductById(productId);
+        addToCart(product);
+    });
 
-function attachChartEvents(){
-    $('.delete').on('click', function(){
-        let productid = $(this).data('delete');
-        if(window.confirm('Möchten Sie das Item entfernen?')){
-            productsInCart.forEach(function(product) {
-                if (product.productid == productid) {
-                    if (itemsIdInCart.includes(productid)){
-                        itemsIdInCart.pop(productid);
-                    }
-                    productsInCart.pop(product);
-                }
+    $(document).on('click', '#cartButton', function () {
+        displayCartItems();
+        $('#cartModal').modal('show');
+    });
+
+    $('#checkoutButton').on('click', function (event) {
+        event.preventDefault(); // Prevent the default behavior
+        checkLoginStatusBeforeCheckout();
+    });
+    function getProductById(productId) {
+        return products.find(product => product.productid === productId);
+    }
+
+    window.addToCart = function(product) {
+        const existingProduct = cart.find(item => item.productid === product.productid);
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({
+                productid: product.productid,
+                name: product.productname,
+                price: product.insale === 1 ? product.specialprice : product.regularprice,
+                image: product.imgpath,
+                quantity: 1
             });
-            itemsList = [];
-            getItemsList();
-            console.log(itemsList);
-            console.log(itemsIdInCart);
-            console.log(productsInCart);
         }
-        buildChart();
-    });
-
-    $('.plus').on('click', function (){
-        let i = Number($('#id-'+$(this).data('plus')).val());
-        let price = parseFloat($('#price-'+$(this).data('plus')).data('price'));
-        i += 1;
-        $('#id-'+$(this).data('plus')).val(i);
-        let newItemPrice = price * i;
-        totalAmount += price;
-        $('#price-'+$(this).data('plus')).text('€ '+newItemPrice.toFixed(2));
-        $('#totalamount').text('€ '+totalAmount.toFixed(2));
-        itemsIdInCart.push($(this).data('plus'));
-        let product = productsInCart.find(product => product.productid ==$(this).data('plus'));
-        productsInCart.push(product);
-        itemsList.push(product);
-        $("#cartItemCount").text(itemsIdInCart.length);
-        $('#itemCount').text(' '+itemsIdInCart.length+' Artikel im Einkaufswagen');
-    })
-
-    $('.minus').on('click', function (){
-        let productid = $(this).data('minus');
-        let i = Number($('#id-'+$(this).data('minus')).val());
-        let price = parseFloat($('#price-'+productid).data('price'));
-        i -= 1;
-        if(i<1){
-            i=1;
-        }else {
-            $('#id-'+$(this).data('minus')).val(i);
-            let newPrice = price * i;
-            totalAmount -= price
-            $('#price-'+$(this).data('minus')).text('€ '+newPrice.toFixed(2));
-            $('#totalamount').text('€ '+totalAmount.toFixed(2));
-            itemsIdInCart.pop($(this).data('minus'));
-            let product = productsInCart.find(product => product.productid ==$(this).data('minus'));
-            productsInCart.pop(product);
-            itemsList.pop(product);
-            $("#cartItemCount").text(itemsIdInCart.length);
-            $('#itemCount').text(' '+itemsIdInCart.length+' Artikel im Einkaufswagen');
-        }
-    })
-
-    $('#checkout').on('click', function() {
-        $.ajax({
-            url: 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=order',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(itemsIdInCart),
-            success: function(response) {
-                console.log('Daten erfolgreich gesendet!', response);
-                $("#content-placeholder").load("checkout.html");
-                // SQL-Statement für Datenabruf:
-                // Select u.salutation, u.firstname, u.lastname, p.productname, p.regularprice, p.specialprice, p.insale, p.imgpath
-                // from users u,products p, orders o where u.userid = o.userid and p.productid = o.productid and o.state = 'checkout';
-            },
-            error: function(xhr, status, error) {
-                console.error('Fehler beim Senden der Daten:', error);
-            }
-        });
-    })
-}
-
-function getItemsList(){
-    let checkId = [];
-    productsInCart.forEach(product => {
-        if (!checkId.includes(product.productid)) {
-            checkId.push(product.productid);
-            itemsList.push(product);
-        }
-    })
-}
-
-function countSameItems(productid){
-    let count = 0;
-    productsInCart.forEach(function (product){
-        if(product.productid == productid){
-            count++
-        }
-    })
-    return count;
-}
-
-function calculateItemPrice(product){
-    itemprice = 0;
-    let itemcount = countSameItems(product.productid);
-    if(product.insale == 1){
-        totalAmount += product.specialprice * itemcount;
-        itemprice = product.specialprice * itemcount;
-
-    }else{
-        totalAmount += product.regularprice * itemcount;
-        itemprice = product.regularprice * itemcount;
-    }
-}
-
-function buildChart(){
-    $('#itemsList').text('');
-    totalAmount = 0.0;
-    itemsList.forEach(function (product){
-        calculateItemPrice(product);
-        let countedItems = countSameItems(product.productid);
-        let cartItem = $('<div/>',{
-            'class': 'row main align-items-center cartItem',
-            'data-productId': product.productname
-        });
-        let div = $('<div/>', {
-            'class': 'col-2'
-        })
-        let img = $('<img/>', {
-            'class': 'img-fluid',
-            'src': product.imgpath
-        })
-        div.append(img);
-        cartItem.append(div);
-        div = $('<div>', {
-            'class': 'col'
-        })
-        let div1 = $('<div/>',{
-            'class': 'row text-muted',
-        })
-        div1.text(product.category);
-        let div2 = $('<div/>', {
-            'class': 'row'
-        })
-        div2.text(product.productname);
-        div.append(div1);
-        div.append(div2);
-        cartItem.append(div);
-
-        div = $('<div/>',{
-            'class': 'col'
-        });
-        let aplus = $('<a/>', {
-            'class': 'btn btn-outline-dark mt-auto plus',
-            'data-plus': product.productid
-        });
-        aplus.text('+');
-        let aminus = $('<a/>', {
-            'class': 'btn btn-outline-dark mt-auto minus',
-            'data-minus': product.productid,
-            'data-productname': product.prodactname
-        });
-        aminus.text('-');
-
-        let acenter = $('<input/>', {
-            'class': 'border input-data',
-            'size': '1',
-            'id': 'id-'+product.productid,
-            'disabled': true
-        });
-        acenter.val(countedItems);
-        div.append(aminus);
-        div.append(acenter);
-        div.append(aplus);
-        cartItem.append(div);
-        let productprice
-        if(product.insale == 1){
-            productprice = product.specialprice;
-        }else{
-            productprice = product.regularprice;
-        }
-        div = $('<div/>',{
-            'class': 'col',
-            'id': 'price-'+product.productid,
-            'data-price': productprice
-        });
-        div.text('€ '+itemprice.toFixed(2));
-        cartItem.append(div);
-        div = $('<div/>',{
-            'class': 'col-2'
-        });
-        let deleteBtn = $('<a/>',{
-            'class': 'btn mt-auto delete',
-            'data-delete': product.productid
-        });
-        deleteBtn.text('x');
-        div.append(deleteBtn);
-        cartItem.append(div);
-        $('#itemsList').append(cartItem);
-    });
-    $('#itemCount').text(' '+itemsIdInCart.length+' Artikel im Einkaufswagen');
-    $('#totalamount').text('€ '+totalAmount.toFixed(2));
-    attachChartEvents()
-}
-
-function getProductsInCart(itemList) {
-    apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=productsById&id=';
-    const promises = [];
-    if (itemList.length > 0) {
-        itemList.forEach(function (item) {
-            promises.push(getProductsById(apiUrl + item));
-        });
-        return Promise.all(promises);
-    } else {
-        console.log("Keine Produkte gefunden");
-        return Promise.resolve([]);
+        saveCart();
+        updateCartCount();
+        updateTotalPrice();
+        displayCartItems();
+        //console.log(cart);
     }
 
-}
+    function updateCartCount() {
+        const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        $('#cartItemCount').text(cartCount);
+    }
 
-function getProductsById(apiUrl) {
-    return new Promise((resolve, reject) => {
+    function updateTotalPrice() {
+        const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        $('#total-price').text(`Total: €${totalPrice.toFixed(2)}`);
+    }
+
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function loadCart() {
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+            cart = JSON.parse(storedCart);
+        }
+    }
+
+    function displayCartItems() {
+        const storedCart = localStorage.getItem('cart');
+        const cartItems = storedCart ? JSON.parse(storedCart) : [];
+        const cartItemsList = $("#cartItemsList");
+        const checkoutButton = $("#checkoutButton");
+        cartItemsList.empty();
+
+        if (cartItems.length === 0) {
+            cartItemsList.append('<li class="list-group-item text-center">Keine Produkte im Warenkorb</li>');
+            checkoutButton.hide();
+            return;
+        }
+
+
+        checkoutButton.show();
+
+        cartItems.forEach((item, index) => {
+            const listItem = `
+                <li class="list-group-item">
+                  <div class="row align-items-center w-100">
+                    <div class="col d-flex align-items-center position-relative">
+                      <img src="${item.image}" alt="${item.name}" class="img-thumbnail border-0 me-3 product-image" style="width: auto; height: auto; max-height: 100px; max-width: 100%;">
+                      <span class="badge bg-secondary rounded-pill me-3">${item.quantity}</span>
+                      <span class="text-truncate" style="max-width: 200px; font-size: 0.875rem;">${item.name}</span>
+                      <span class="product-name-hover position-absolute bg-light p-1" style="display: none; font-size: 0.75rem; padding: 2px 5px;">${item.name}</span>
+                    </div>
+                    <div class="col-auto d-flex align-items-center">
+                      <button class="btn btn-sm btn-outline-secondary decrement-item me-2" data-index="${index}" aria-label="Decrement">-</button>
+                      <button class="btn btn-sm btn-outline-secondary increment-item me-3" data-index="${index}" aria-label="Increment">+</button>
+                      <span class="badge bg-primary rounded-pill">€${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </li>
+            `;
+            cartItemsList.append(listItem);
+        });
+
+        // Attach event listeners for increment and decrement buttons
+        $(".increment-item").on("click", function () {
+            const itemIndex = $(this).data("index");
+            incrementCartItem(itemIndex);
+        });
+
+        $(".decrement-item").on("click", function () {
+            const itemIndex = $(this).data("index");
+            decrementCartItem(itemIndex);
+        });
+
+        updateTotalPrice();
+    }
+
+    function incrementCartItem(index) {
+        cart[index].quantity += 1;
+        saveCart();
+        updateCartCount();
+        updateTotalPrice();
+        displayCartItems();
+    }
+
+    function decrementCartItem(index) {
+        if (cart[index].quantity > 1) {
+            cart[index].quantity -= 1;
+        } else {
+            cart.splice(index, 1);
+        }
+        saveCart();
+        updateCartCount();
+        updateTotalPrice();
+        displayCartItems();
+    }
+
+    window.checkLoginStatusBeforeCheckout = function() {
         $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            contentType: 'application/json',
             url: apiUrl,
+            type: 'POST',
+            data: JSON.stringify({ type: 'loginStatus' }),
+            contentType: 'application/json',
+            xhrFields: { withCredentials: true },
             success: function (response) {
-                if (response.length > 0) {
-                    response.forEach(function (product) {
-                        productsInCart.push(product);
-                    });
+                console.log('isLoggedIn:', response.isLoggedIn);
+                if (response.isLoggedIn) {
+                    // User is logged in, proceed to checkout
+                    window.location.href = 'checkout.html';
                 } else {
-                    console.log("Keine Produkte gefunden");
+                    // User is not logged in, redirect to login page
+                    alert("Please login first.");
+                    window.location.href = 'login.html';
                 }
-                resolve(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('AJAX request failed:', textStatus, errorThrown); // Debugging line
-                reject(errorThrown);
+                console.log('Login status request failed:', textStatus, errorThrown);
+                // In case of error, redirect to login page
+                window.location.href = 'login.html';
             }
-
         });
-    });
-}
+    };
+
+});
