@@ -25,7 +25,6 @@ $(document).ready(function () {
             type: 'register',
             userData: userData
         };
-
         $.ajax({
             type: 'POST',
             dataType: 'json',

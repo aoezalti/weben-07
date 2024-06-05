@@ -43,7 +43,6 @@ class RequestHandler
         try {
             $type = isset($_GET['type']) ? $_GET['type'] : '';
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-
             switch ($type) {
                 case 'products':
                     $response = $this->productDAO->getProducts();
@@ -100,10 +99,12 @@ class RequestHandler
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->checkUser($userData);
-                        if (isset($response["success"])) {
+                        if (isset($response["success"]) && $response["success"] === true) {
                             //set login
                             $_SESSION["loggedIn"] = true;
+                            $_SESSION["userRecord"] = $response["data"];
                             $_SESSION["username"] = $userData['user'];
+
                         }
                     }
                     break;

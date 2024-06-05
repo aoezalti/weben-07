@@ -64,7 +64,7 @@ class UserDAO
             if ($userRecord) {
                 if (password_verify($password, $userRecord['password'])) {
 
-                    return ["success" => "Login successful!"];
+                    return ["success" => true, "data" => $userRecord];
                 } else {
 
                     return ["success" => false, "message" => "Incorrect password"];

@@ -21,9 +21,10 @@ $(document).ready(function () {
             url: apiURL,
             data: JSON.stringify(payload),
             success: function (response) {
-                if (response.success === "Login successful!") {
+                if (response.success) {
                     getLoginStatus();
-                    window.location.href = "index.html";
+
+                    window.location.href = "./profile.html";
                 } else {
                     console.log("oh oh kein login möglich", response);
                 }
