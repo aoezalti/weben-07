@@ -14,7 +14,8 @@ $(document).ready(function () {
             benutzername: $('#benutzername').val(),
             passwort: $('#passwort').val(),
             passwortVerify: $('#passwortVerify').val(),
-            zahlungsinformationen: $('#zahlungsinformationen').val()
+            zahlungsinformationen: $('#zahlungsinformationen').val(),
+            zahlungstyp: $('#zahlungstyp').val()
         };
 
         registerUser(userData, apiURL);
