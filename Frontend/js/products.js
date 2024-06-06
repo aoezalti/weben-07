@@ -20,16 +20,33 @@ $(document).ready(function () {
         return productElement;
     }
 
+    function addCartButton(productElement, product) {
+        productElement.find('.btn').addClass('add-to-cart').data('id', product.productid);
+        return productElement;
+    }
+
     function createBaseProductElement(product) {
         let productElement = $('.product-template').clone().removeClass('product-template').show();
         $('.product-template:first').hide();
-        productElement.addClass("product-card " + product.category).attr("id", "product-" + product.productid).attr("data-id",product.productid).draggable({
-            revert: true,
-            helper: function() {
-                return $(this).clone().addClass('draggable-product');
-            },
-            cursor: 'move'
-        });
+        productElement.addClass("product-card " + product.category)
+            .attr("id", "product-" + product.productid)
+            .attr("data-id", product.productid)
+            .draggable({
+                revert: true,
+                cursor: 'move',
+                helper: function () {
+                    // Create a smaller version of the product card
+                    let helper = $(this).clone();
+                    helper.css({
+                        width: '200px',
+                        height: '200px',
+                        overflow: 'hidden'
+                    });
+                    helper.find('.card-body').css('display', 'none'); // Hide detailed content
+                    helper.find('.card-footer').css('display', 'none'); // Hide detailed content
+                    return helper;
+                }
+            });
         return productElement;
     }
 
@@ -67,14 +84,7 @@ $(document).ready(function () {
         return productElement;
     }
 
-    function addCartButton(productElement, product) {
-        productElement.find('.btn').on('click', function () {
-            console.log("button pressed")
-            itemsIdInCart.push(product.productid);
-            $("#cartItemCount").text(itemsIdInCart.length);
-        });
-        return productElement;
-    }
+
 
     function updateUI(products) {
         products.forEach(function (product) {

@@ -1,88 +1,80 @@
 var products = [];
 var categories = ["Alle Produkte"];
-var itemsIdInCart = [];
+var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
 
 $(document).ready(function () {
     $("#navbar-placeholder").load("../sites/navbar.html", function () {
         attachNavbarEvents();
         getLoginStatus();
+        updateCartCount();
     });
-    $("#modal-placeholder").load("../sites/modal.html");
 
     $("#footer-placeholder").load("footer.html");
+    addHoverEffect();
 });
 
 function attachNavbarEvents() {
     $("#loginButton").on("click", function (event) {
         event.preventDefault();
         $("#categories").slideUp(500);
-
         window.location.href = "login.html";
     });
     $("#registerButton").on("click", function (event) {
         event.preventDefault();
         $("#categories").slideUp(500);
-
         window.location.href = "register.html";
     });
-    $("#cartButton").droppable({
-        tolerance: 'pointer',
-        drop: function (event, ui) {
-            var product = ui.draggable;
-            itemsIdInCart.push(product.data('id'))
-            console.log(itemsIdInCart);
-            $("#cartItemCount").text(itemsIdInCart.length);
 
-        }
-    })
-    $("#cartButton").on("click", function () {
-        $("#cart-placeholder").text('');
-        if(itemsIdInCart.length == 0){
-            alert('Keine Artikel im Warenkorb!');
-        }else{
-            try{
-                getProductsInCart(itemsIdInCart);
-                $("#cart-placeholder").load("cart.html");
-                $("#cartModal").modal("show");
-            } catch (error) {
-                console.error('Fehler beim Abrufen der Produkte:', error);
-            }
-        }
-    });
     $("#logoutButton").on("click", function (event) {
         event.preventDefault();
         $.ajax({
-            url: 'http://localhost/weben-07/Backend/logic/requestHandler.php',
+            url: apiUrl,
             type: 'POST',
-            data: JSON.stringify({ type: 'logout' }), // Send the type 'logout'
+            data: JSON.stringify({type: 'logout'}),
             contentType: 'application/json',
-            xhrFields: {
-                withCredentials: true // Include cookies in the request
-            },
-            success: function(response) {
+            xhrFields: {withCredentials: true},
+            success: function (response) {
                 if (response.success === "Logout successful!") {
-                    getLoginStatus(); // Update the navbar
+                    clearCart();
+                    getLoginStatus();
+                    localStorage.removeItem('isLoggedIn');
                     window.location.href = "index.html";
                 } else {
                     console.log('Logout failed:', response.message);
                 }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Logout request failed:', textStatus, errorThrown);
             }
         });
+    });
+    $('#cartButton').droppable({
+        accept: '.product-card',
+        tolerance: 'touch',
+        drop: function (event, ui) {
+            console.log("Drop event triggered");
+            const productId = ui.helper.data('id');
+            const product = getProductById(productId);
+            if (product) {
+                window.addToCart(product); // Call the globally defined addToCart function
+            }
+        },
+        over: function(event, ui) {
+            console.log("Draggable element is over the droppable element");
+        },
+        out: function(event, ui) {
+            console.log("Draggable element is out of the droppable element");
+        }
     });
 }
 
 function getLoginStatus() {
     $.ajax({
-        url: 'http://localhost/weben-07/Backend/logic/requestHandler.php',
+        url: apiUrl,
         type: 'POST',
         data: JSON.stringify({type: 'loginStatus'}),
         contentType: 'application/json',
-        xhrFields: {
-            withCredentials: true // Include cookies in the request
-        },
+        xhrFields: {withCredentials: true},
         success: function (response) {
             console.log('getLoginStatus response:', response);
             updateNavbar(response.username);
@@ -94,17 +86,44 @@ function getLoginStatus() {
 }
 
 function updateNavbar(username) {
-    console.log('updateNavbar called with username:', username);
     if (username) {
-        console.log('User is logged in');
         $('#authButtons').hide();
         $('#logoutButton').show();
         $('#welcomeUser').text('Hallo, ' + username);
         $('#userSection').show();
     } else {
-        console.log('User is not logged in');
         $('#authButtons').show();
         $('#logoutButton').hide();
         $('#userSection').hide();
     }
+}
+
+function updateCartCount() {
+    const storedCart = localStorage.getItem('cart');
+    const cartCount = storedCart ? JSON.parse(storedCart).reduce((total, item) => total + item.quantity, 0) : 0;
+    $('#cartItemCount').text(cartCount);
+}
+
+function clearCart() {
+    cart = [];
+    localStorage.removeItem('cart');
+    updateCartCount();
+}
+
+function addHoverEffect() {
+    var hoverTimeout;
+
+    $(document).on('mouseenter', '.product-image', function () {
+        var $this = $(this);
+        hoverTimeout = setTimeout(function () {
+            $this.siblings('.product-name-hover').fadeIn();
+        }, 500);
+    }).on('mouseleave', '.product-image', function () {
+        clearTimeout(hoverTimeout);
+        $(this).siblings('.product-name-hover').fadeOut();
+    });
+}
+
+function getProductById(productId) {
+    return products.find(product => product.productid === productId);
 }
