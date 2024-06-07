@@ -43,10 +43,11 @@ class RequestHandler
         try {
             $type = isset($_GET['type']) ? $_GET['type'] : '';
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+            $search = isset($_GET['search']) ? $_GET['search'] : '';
 
             switch ($type) {
                 case 'products':
-                    $response = $this->productDAO->getProducts();
+                    $response = $this->productDAO->getProducts($search);
                     break;
                 case 'user':
                     break;

@@ -1,111 +1,48 @@
+var products = [];
 $(document).ready(function () {
     var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=products';
-    /*$("#productPage-link").on("click", function (event) {
-        window.location.href = "products.html";
-    });*/
+
+    var categories = ["Alle Produkte"];
 
     getProducts(apiUrl);
     setTimeout(attachCategoryToNavBar, 100);
     setTimeout(attachCategoryEvent, 100);
 
-    $(this).show();
+    $('#product-search').on('input', function () {
+        let query = $(this).val();
+        searchProducts(query);
+    });
 
-    function createProductElement(product) {
-        let productElement = createBaseProductElement(product);
-        productElement = addProductImage(productElement, product);
-        productElement = addProductName(productElement, product);
-        productElement = addProductPrice(productElement, product);
-        productElement = addProductReview(productElement, product);
-        productElement = addCartButton(productElement, product);
-        return productElement;
-    }
-
-    function addCartButton(productElement, product) {
-        productElement.find('.btn').addClass('add-to-cart').data('id', product.productid);
-        return productElement;
-    }
-
-    function createBaseProductElement(product) {
-        let productElement = $('.product-template').clone().removeClass('product-template').show();
-        $('.product-template:first').hide();
-        productElement.addClass("product-card " + product.category)
-            .attr("id", "product-" + product.productid)
-            .attr("data-id", product.productid)
-            .draggable({
-                revert: true,
-                cursor: 'move',
-                helper: function () {
-                    // Create a smaller version of the product card
-                    let helper = $(this).clone();
-                    helper.css({
-                        width: '200px',
-                        height: '200px',
-                        overflow: 'hidden'
-                    });
-                    helper.find('.card-body').css('display', 'none'); // Hide detailed content
-                    helper.find('.card-footer').css('display', 'none'); // Hide detailed content
-                    return helper;
+    function searchProducts(query) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: apiUrl,
+            data: { search: query },
+            success: function (response) {
+                $('#productgrid').empty();
+                if (response.length > 0) {
+                    products = response;
+                    updateUI(products);
+                } else {
+                    $('#productgrid').append('<p>No products found</p>');
                 }
-            });
-        return productElement;
-    }
-
-    function addProductImage(productElement, product) {
-        productElement.find('.product-img').attr('src', product.imgpath).attr('alt', product.altimg);
-        return productElement;
-    }
-
-    function addProductName(productElement, product) {
-        productElement.find('.product-name').text(product.productname);
-        return productElement;
-    }
-
-    function addProductPrice(productElement, product) {
-        if (product.insale === 1) {
-            let salebadge = $("<div class='badge bg-dark text-white position-absolute' style='top: 0.5rem; right: 0.5rem'>Angebot</div>");
-            productElement.find('.card').append(salebadge);
-            productElement.find('.product-price').addClass("fw-bold text-danger").text(`€${product.specialprice}`);
-        } else {
-            productElement.find('.product-price').text(`€${product.regularprice}`);
-        }
-        return productElement;
-    }
-
-    function addProductReview(productElement, product) {
-        let reviewDiv = productElement.find('.product-review');
-        let fullStars = parseInt(product.currentreview);
-        let halfStar = product.currentreview % 1 !== 0;
-        for (let i = 0; i < fullStars; i++) {
-            reviewDiv.append('<div class="bi-star-fill"></div>');
-        }
-        if (halfStar) {
-            reviewDiv.append('<div class="bi bi-star-half"></div>');
-        }
-        return productElement;
-    }
-
-
-
-    function updateUI(products) {
-        products.forEach(function (product) {
-            let productElement = createProductElement(product);
-            $('#productgrid').append(productElement);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('AJAX request failed:', textStatus, errorThrown);
+            }
         });
-        $('#productgrid').fadeIn(1000);
     }
 
     function getProducts(apiUrl) {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            contentType: 'application/json',
             url: apiUrl,
             success: function (response) {
+                // console.log('Initial response:', response);
                 if (response.length > 0) {
-                    response.forEach(function (product) {
-                        // Create product element based on the HTML template in products.html
-                        products.push(product);
-                    });
+                    products = response;
                     updateUI(products);
                 } else {
                     console.log("Keine Produkte gefunden");
@@ -117,6 +54,92 @@ $(document).ready(function () {
         });
     }
 
+    function updateUI(products) {
+        $('#productgrid').empty();
+        products.forEach(function (product) {
+            let productElement = createProductElement(product);
+            $('#productgrid').append(productElement);
+        });
+        $('#productgrid').fadeIn(1000);
+    }
+
+    // product element generation without template, add elements dynamically
+    function createProductElement(product) {
+        let productElement = $('<div class="col mb-5 product-card ' + product.category + '">');
+        productElement.attr("id", "product-" + product.productid)
+            .attr("data-id", product.productid);
+
+        let card = $('<div class="card h-100">').appendTo(productElement);
+        addProductImage(card, product);
+        let cardBody = $('<div class="card-body p-4">').appendTo(card);
+        let textCenter = $('<div class="text-center">').appendTo(cardBody);
+        addProductName(textCenter, product);
+        addProductReview(textCenter, product);
+        addProductPrice(textCenter, product);
+        let cardFooter = $('<div class="card-footer p-4 pt-0 border-top-0 bg-transparent">').appendTo(card);
+        let textCenterFooter = $('<div class="text-center">').appendTo(cardFooter);
+        addCartButton(textCenterFooter, product);
+
+        productElement.draggable({
+            revert: true,
+            cursor: 'move',
+            helper: function () {
+                let helper = $(this).clone();
+                helper.css({
+                    width: '200px',
+                    height: '200px',
+                    overflow: 'hidden'
+                });
+                helper.find('.card-body').css('display', 'none');
+                helper.find('.card-footer').css('display', 'none');
+                return helper;
+            }
+        });
+
+        return productElement;
+    }
+
+    function addProductImage(container, product) {
+        $('<img class="card-img-top product-img">')
+            .attr('src', product.imgpath)
+            .attr('alt', product.altimg)
+            .appendTo(container);
+    }
+
+    function addProductName(container, product) {
+        $('<h5 class="fw-bolder product-name">').text(product.productname).appendTo(container);
+    }
+
+    function addProductPrice(container, product) {
+        if (product.insale === 1) {
+            $('<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Angebot</div>')
+                .appendTo(container.closest('.card'));
+            $('<div class="product-price fw-bold text-danger">').text(`€${product.specialprice}`).appendTo(container);
+        } else {
+            $('<div class="product-price">').text(`€${product.regularprice}`).appendTo(container);
+        }
+    }
+
+    function addProductReview(container, product) {
+        let reviewDiv = $('<div class="d-flex justify-content-center small text-warning mb-2 product-review">').appendTo(container);
+        let fullStars = parseInt(product.currentreview);
+        let halfStar = product.currentreview % 1 !== 0;
+        for (let i = 0; i < fullStars; i++) {
+            reviewDiv.append('<div class="bi-star-fill"></div>');
+        }
+        if (halfStar) {
+            reviewDiv.append('<div class="bi bi-star-half"></div>');
+        }
+    }
+
+    function addCartButton(container, product) {
+        console.log('Adding cart button to product element:', product);
+        $('<a class="btn btn-outline-dark mt-auto add-to-cart">')
+            .text('In den Einkaufswagen')
+            .data('id', product.productid)
+            .appendTo(container);
+    }
+
     function attachCategoryEvent(obj) {
         if (obj !== undefined) {
             $(".product-card").remove();
@@ -124,7 +147,7 @@ $(document).ready(function () {
         }
     }
 
-    function populateProductsByCategory(category){
+    function populateProductsByCategory(category) {
         if (category === 'Alle Produkte') {
             updateUI(products);
         } else if (category !== 'none') {
@@ -134,22 +157,20 @@ $(document).ready(function () {
     }
 
     function attachCategoryToNavBar() {
-        //let categories = [];
         $("#category").empty();
         products.forEach(product => {
-            //Liste für die Kategorie-Leiste wird gelesen
             if (!categories.includes(product.category)) {
                 categories.push(product.category);
             }
-        })
+        });
 
         let categoryBar = $("<nav>");
         let list = $("<ul>");
         categoryBar.attr("class", "navbar navbar-expand-lg navbar-light bg-light").attr("id", "categories");
         list.attr("class", "navbar-nav").attr("id", "category");
         categoryBar.append(list);
-        $("#navbar-placeholder").append(categoryBar);
-        //Kategorie-Liste wird durchgegeangen und die Buttons erzeugt.
+        $("#categories").append(categoryBar);
+
         categories.forEach(category => {
             var item = $("<li>");
             item.attr("class", "nav-item");
@@ -160,7 +181,7 @@ $(document).ready(function () {
         });
 
         $(".category").on('click', function () {
-            populateProductsByCategory()
+            populateProductsByCategory();
         });
 
         $('.category').on('click', function (event) {

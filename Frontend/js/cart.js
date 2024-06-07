@@ -8,6 +8,7 @@ $(document).ready(function () {
     $(document).on('click', '.add-to-cart', function () {
         const productId = $(this).data('id');
         const product = getProductById(productId);
+        // console.log('Adding product to cart:', product)
         addToCart(product);
     });
 
@@ -41,7 +42,7 @@ $(document).ready(function () {
         updateCartCount();
         updateTotalPrice();
         displayCartItems();
-        //console.log(cart);
+        console.log('Cart:', cart);
     }
 
     function updateCartCount() {
