@@ -11,6 +11,7 @@ $(document).ready(function () {
 
     $("#footer-placeholder").load("footer.html");
     addHoverEffect();
+    pictureHover();
 });
 
 function attachNavbarEvents() {
@@ -124,6 +125,25 @@ function addHoverEffect() {
     });
 }
 
+function pictureHover() {
+    var hoverTimeout;
+
+    $(document).on('mouseenter', '.hover-effect', function () {
+        var $this = $(this);
+        hoverTimeout = setTimeout(function () {
+            $this.css({
+                'transform': 'scale(1.05)',
+                'box-shadow': '0 10px 20px rgba(0, 0, 0, 0.3)'
+            });
+        }, 400);
+    }).on('mouseleave', '.hover-effect', function () {
+        clearTimeout(hoverTimeout);
+        $(this).css({
+            'transform': 'scale(1)',
+            'box-shadow': 'none'
+        });
+    });
+}
 function getProductById(productId) {
     return products.find(product => product.productid === productId);
 }
