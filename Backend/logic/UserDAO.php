@@ -83,13 +83,18 @@ class UserDAO
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':username', $user);
             $stmt->execute();
-
             $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userRecord) {
                 if (password_verify($password, $userRecord['password'])) {
 
-                    return ["success" => true, "data" => $userRecord];
+                    $paymentSql = "SELECT pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
+                    $paymentStmt = $this->db->prepare($paymentSql);
+                    $paymentStmt->bindParam(':userid', $userRecord['userid']);
+                    $paymentStmt->execute();
+
+                    $paymentRecords = $paymentStmt->fetchAll(PDO::FETCH_ASSOC);
+                    return ["success" => true, "data" => $userRecord, "paymentData" => $paymentRecords];
                 } else {
 
                     return ["success" => false, "message" => "Incorrect password"];

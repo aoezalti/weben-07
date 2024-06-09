@@ -101,10 +101,14 @@ class RequestHandler
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->checkUser($userData);
-                        if (isset($response["success"])) {
+                        if (isset($response["success"]) && $response["success"] === true) {
                             //set login
                             $_SESSION["loggedIn"] = true;
+                            $_SESSION["userRecord"] = $response["data"];
+                            $_SESSION["paymentData"] = $response["paymentData"];
+
                             $_SESSION["username"] = $userData['user'];
+
                         }
                     }
                     break;

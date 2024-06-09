@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    console.log("ASDASDASDAS");
+
     $.ajax({
         type: 'GET',
         dataType: 'json',
@@ -7,7 +7,11 @@ $(document).ready(function() {
         success: function(response) {
             if (response.success) {
                 // Assuming the user is not an admin, create and append the table
-                createTable(response.data);
+                console.log(response.data);
+
+                createUserTable(response.data);
+                createPaymentinfoTable(response.paymentData);
+                createOrderTable(response.data);
 
             }
         },
@@ -16,7 +20,7 @@ $(document).ready(function() {
         }
     });
 
-    function createTable(userData) {
+    function createUserTable(userData) {
         var table = `<table class="table">
                         <thead>
                             <tr>
@@ -27,7 +31,7 @@ $(document).ready(function() {
                                 <th>City</th>
                                 <th>Email</th>
                                 <th>Username</th>
-                                <th>Payment Information</th>
+                                
                                 <th>Address</th>
                             </tr>
                         </thead>
@@ -40,11 +44,57 @@ $(document).ready(function() {
                                 <td>${userData.city}</td>
                                 <td>${userData.mail}</td>
                                 <td>${userData.username}</td>
-                                <td>${userData.paymentinformation}</td>
                                 <td>${userData.address}</td>
                             </tr>
                         </tbody>
                     </table>`;
-        $('.container.mt-5').append(table); // Append the generated table to the container
+        $('.container.mt-5').append(table);
     }
+    function createPaymentinfoTable(paymentData) {
+        var table = `<table class="table">
+                    <thead>
+                        <tr>
+                           <th>Type</th>
+                           <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        paymentData.forEach(function(payment) {
+            table += `<tr>
+                    <td>${payment.paymentType}</td>
+                    <td>${payment.paymentInfo}</td>
+                  </tr>`;
+        });
+
+        table += `</tbody>
+              </table>`;
+
+        $('.container.mt-5').append(table);
+    }
+
+
+    function createOrderTable(userData) {
+        var table = `<table class="table">
+                        <thead>
+                            <tr>
+                               <th>Date</th>
+                               <th>Product</th>
+                               <th>Quantity</th>
+                               <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${userData.orderDate}</td>
+                                <td>${userData.orderItem}</td>
+                                <td>${userData.orderQuantity}</td>
+                                <td>${userData.orderStatus}</td>
+                            </tr>
+                        </tbody>
+                    </table>`;
+        $('.container.mt-5').append(table);
+    }
+
+
 });
