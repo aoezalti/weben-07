@@ -145,13 +145,13 @@ $(document).ready(function () {
             contentType: 'application/json',
             xhrFields: { withCredentials: true },
             success: function (response) {
-                console.log('isLoggedIn:', response.isLoggedIn);
-                if (response.isLoggedIn) {
+                console.log('isLoggedIn:', response.username);
+                if (response.username != null) {
                     // User is logged in, proceed to checkout
                     window.location.href = 'checkout.html';
                 } else {
                     // User is not logged in, redirect to login page
-                    alert("Please login first.");
+                    alert("Bitte loggen Sie sich mit ihrem Account ein, oder Registrieren sich neu!");
                     window.location.href = 'login.html';
                 }
             },
