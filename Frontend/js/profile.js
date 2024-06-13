@@ -7,7 +7,7 @@ $(document).ready(function() {
         success: function(response) {
             if (response.success) {
                 // Assuming the user is not an admin, create and append the table
-                console.log(response.data);
+               // console.log(response.data);
 
                 createUserTable(response.data);
                 createPaymentinfoTable(response.paymentData);

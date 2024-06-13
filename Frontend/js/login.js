@@ -22,9 +22,14 @@ $(document).ready(function () {
             data: JSON.stringify(payload),
             success: function (response) {
                 if (response.success) {
+                    console.log("Admin:" + response.data['isAdmin']);
                     getLoginStatus();
-
-                    window.location.href = "./profile.html";
+                    //if user is admin goto admin page
+                    if(response.data['isAdmin'] === 1){
+                        window.location.href = "./adminarea.html";
+                    }else {
+                        window.location.href = "./profile.html";
+                    }
                 } else {
                     console.log("oh oh kein login möglich", response);
                 }

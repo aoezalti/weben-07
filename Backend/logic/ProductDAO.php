@@ -70,4 +70,32 @@ class ProductDAO
             return null;
         }
     }
+
+    public function changeProduct($productData){
+        try {
+            $field =$productData['field'];
+            $sql = "UPDATE products SET $field = :value WHERE productid = :productid;";
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':value', $productData['newValue']);
+            $stmt->bindParam(':productid', $productData['productid']);
+            $stmt->execute();
+            return ["success" => true];
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function deleteProduct($productData){
+        try {
+            $id =$productData['productid'];
+            $sql = "DELETE from products WHERE productid = :productid;";
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':productid', $productData['productid']);
+            $stmt->execute();
+            return ["success" => true];
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
 }

@@ -49,7 +49,10 @@ class RequestHandler
                 case 'products':
                     $response = $this->productDAO->getProducts($search);
                     break;
-                case 'user':
+                case 'customers':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->getCustomers($search);
                     break;
                 case 'productsByCategory':
                     $response = $this->productDAO->getProductsByCategory(isset($_GET['category']) ? $_GET['category'] : '');
@@ -83,6 +86,7 @@ class RequestHandler
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
             $userChanges = isset($data['data']) ? $data['data'] : [];
+            $productData = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
             //sanitization
@@ -90,6 +94,19 @@ class RequestHandler
                 $userData[$key] = htmlspecialchars(strip_tags($value));
             }
             switch ($type) {
+                case 'toggleActive':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->toggleActive($userChanges);
+                    break;
+                case 'deleteProduct':
+                    $response = $this->productDAO->deleteProduct($productData);
+                    break;
+
+                case 'changeProduct':
+                    $response = $this->productDAO->changeProduct($productData);
+
+                    break;
                 case 'register':
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
@@ -113,6 +130,7 @@ class RequestHandler
                             $_SESSION["paymentData"] = $response["paymentData"];
                             $_SESSION["orderData"] = $response["orderData"];
                             $_SESSION["username"] = $userData['user'];
+
                         }
                     }
                     break;
@@ -134,7 +152,7 @@ class RequestHandler
                         $_SESSION["userRecord"] = $response["data"];
                         $_SESSION["paymentData"] = $response["paymentData"];
                         $_SESSION["orderData"] = $response["orderData"];
-                       // $_SESSION["username"] = $userData['user'];
+
 
                     }
                 break;

@@ -40,11 +40,13 @@ function displayInvoice(order){
             <table border="1">
                 <tr>
                     <th>Artikel</th>
+                    <th>Stückzahl</th>
                     <th>Preis</th>
                 </tr>
                 <tr>
                     <td>${order.productname}</td>
-                    <td>${order.regularprice.toFixed(2)} €</td>
+                    <td>${order.productCount}</td>
+                    <td>${order.totalPrice.toFixed(2)} €</td>
                 </tr>
             </table>
 

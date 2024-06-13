@@ -51,7 +51,8 @@ class UserDAO
         }
     }
 
-    public function setPaymentMethod($username, $zahlungsinformationen, $zahlungstyp){
+    public function setPaymentMethod($username, $zahlungsinformationen, $zahlungstyp)
+    {
         try {
             $sql = "SELECT userid FROM users WHERE username = :username";
             $stmt = $this->db->prepare($sql);
@@ -69,9 +70,9 @@ class UserDAO
 
             $stmt->execute();
 
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
         }
-        catch(PDOException $e) {
-            return ["error" => "Database error: " . $e->getMessage()];}
     }
 
     public function checkUser($userData)
@@ -89,7 +90,7 @@ class UserDAO
                 if (password_verify($password, $userRecord['password'])) {
 
                     $paymentRecords = $this->getPaymentInformation($userRecord['userid']);
-                    $orderRecords = $this -> getOrderRecords($userRecord['userid']);
+                    $orderRecords = $this->getOrderRecords($userRecord['userid']);
                     return ["success" => true, "data" => $userRecord, "paymentData" => $paymentRecords, "orderData" => $orderRecords];
                 } else {
 
@@ -104,7 +105,8 @@ class UserDAO
         }
     }
 
-    function getPaymentInformation($userId) {
+    function getPaymentInformation($userId)
+    {
         try {
 
             $paymentSql = "SELECT pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
@@ -121,10 +123,11 @@ class UserDAO
         }
     }
 
-    function getOrderRecords($userId) {
-        try{
+    function getOrderRecords($userId)
+    {
+        try {
             $oderSQL = "SELECT 
-                        orders.orderid,
+                      distinct  orders.orderid,
                         orders.state,
                         orders.order_date as orderDate    
                     FROM orders 
@@ -142,14 +145,15 @@ class UserDAO
         }
     }
 
-    public function getOrdersByID($orderID){
-        try{
+    public function getOrdersByID($orderID)
+    {
+        try {
             $sql = "SELECT 
                         orders.order_date, 
                         orders.state,
-                        orders.productid,
-                        products.productname,
-                        products.regularprice,
+                        count(orders.productid) as productCount,
+                         products.productname,
+                        products.regularprice * count(orders.productid) as totalPrice ,
                         users.salutation,
                         users.firstname,
                         users.lastname,
@@ -159,31 +163,34 @@ class UserDAO
                     FROM orders 
                     left join products on orders.productid = products.productid
                     left join users on orders.userid = users.userid
-                    WHERE orderid = :orderid";
+                    WHERE orderid = :orderid
+                    group by orders.orderid
+                    ";
             $sqlstmt = $this->db->prepare($sql);
             $sqlstmt->bindParam(':orderid', $orderID, PDO::PARAM_INT);
             $sqlstmt->execute();
             $order = $sqlstmt->fetch(PDO::FETCH_ASSOC);
             return $order;
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
 
             return ["error" => "Database error: " . $e->getMessage()];
         }
     }
 
-    public function changeUser($userChanges){
-        $userPW="";
+    public function changeUser($userChanges)
+    {
+        $userPW = "";
         try {
             $sql = "SELECT username as user, password FROM users WHERE userid = :userid";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':userid', $userChanges["userid"], PDO::PARAM_INT);
             $stmt->execute();
             $userData = $stmt->fetch(PDO::FETCH_ASSOC);
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
             return ["error" => "Database error: " . $e->getMessage()];
         }
-            if (password_verify($userChanges['password'],$userData['password'])) {
-                try{
+        if (password_verify($userChanges['password'], $userData['password'])) {
+            try {
                 $field = $userChanges['field'];
                 $sql = "UPDATE users SET $field = :value where userid = :userid";
                 $stmt = $this->db->prepare($sql);
@@ -192,7 +199,7 @@ class UserDAO
                 $stmt->execute();
 
                 //edit password in array so that checkUser functions properly
-                $userData['password'] =$userChanges['password'];
+                $userData['password'] = $userChanges['password'];
                 return $this->checkUser($userData);
 
             } catch (PDOException $e) {
@@ -201,6 +208,33 @@ class UserDAO
         }
     }
 
+    public function getCustomers()
+    {
+        try {
+            $sql = "SELECT concat(firstname, ' ', lastname) AS customerName, userid as customerid, isActive FROM users";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $customers;
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
 
+
+
+    }
+
+    public function toggleActive($userData){
+        try {
+            $sql = "UPDATE users SET isActive = :active WHERE userid = :userid";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':active', $userData["value"], PDO::PARAM_INT);
+            $stmt->bindParam(':userid', $userData["userid"], PDO::PARAM_INT);
+            $stmt->execute();
+            return ["success" => true];
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
 
 }
