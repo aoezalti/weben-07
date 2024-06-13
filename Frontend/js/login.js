@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=login';
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
 
     $('form').on('submit', function (event) {
         event.preventDefault(); // Prevent form submission

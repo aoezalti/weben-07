@@ -13,7 +13,7 @@ class RequestHandler
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-        // $this->userDAO = new UserDAO();
+      //  $this->userDAO = new UserDAO();
         $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
@@ -57,6 +57,11 @@ class RequestHandler
                 case 'productsById':
                     $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
                     break;
+                case 'orders':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
+                    break;
                 default:
                     $response = null;
                     break;
@@ -77,7 +82,7 @@ class RequestHandler
             $data = json_decode(file_get_contents('php://input'), true);
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
-
+            $userChanges = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
             //sanitization
@@ -106,9 +111,8 @@ class RequestHandler
                             $_SESSION["loggedIn"] = true;
                             $_SESSION["userRecord"] = $response["data"];
                             $_SESSION["paymentData"] = $response["paymentData"];
-
+                            $_SESSION["orderData"] = $response["orderData"];
                             $_SESSION["username"] = $userData['user'];
-
                         }
                     }
                     break;
@@ -120,6 +124,20 @@ class RequestHandler
                     break;
                 case 'orders':
                     $this->cartDAO->setOrder($data);
+                    break;
+                case 'changeUser':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    if(!empty($userChanges)){
+
+                        $response = $this->userDAO->changeUser($userChanges);
+                        $_SESSION["userRecord"] = $response["data"];
+                        $_SESSION["paymentData"] = $response["paymentData"];
+                        $_SESSION["orderData"] = $response["orderData"];
+                       // $_SESSION["username"] = $userData['user'];
+
+                    }
+                break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
                     break;

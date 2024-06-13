@@ -11,7 +11,7 @@ $(document).ready(function() {
 
                 createUserTable(response.data);
                 createPaymentinfoTable(response.paymentData);
-                createOrderTable(response.data);
+                createOrderTable(response.orderData);
 
             }
         },
@@ -21,7 +21,9 @@ $(document).ready(function() {
     });
 
     function createUserTable(userData) {
-        var table = `<table class="table">
+        var table = `
+                        <h3>click on table elements to edit data</h3>
+                        <table class="table">
                         <thead>
                             <tr>
                                 <th>Salutation</th>
@@ -37,19 +39,22 @@ $(document).ready(function() {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>${userData.salutation}</td>
-                                <td>${userData.firstname}</td>
-                                <td>${userData.lastname}</td>
-                                <td>${userData.plz}</td>
-                                <td>${userData.city}</td>
-                                <td>${userData.mail}</td>
-                                <td>${userData.username}</td>
-                                <td>${userData.address}</td>
+                            <td onclick="editCell('salutation', this,${userData.userid})"><a href="#">${userData.salutation}</a></td>
+                            <td onclick="editCell('firstname', this,${userData.userid})"><a href="#">${userData.firstname}</a></td>
+                            <td onclick="editCell('lastname', this,${userData.userid})"><a href="#">${userData.lastname}</a></td>
+                            <td onclick="editCell('plz', this,${userData.userid})"><a href="#">${userData.plz}</a></td>
+                            <td onclick="editCell('city', this,${userData.userid})"><a href="#">${userData.city}</a></td>
+                            <td onclick="editCell('mail', this,${userData.userid})"><a href="#">${userData.mail}</a></td>
+                            <td onclick="editCell('username', this,${userData.userid})"><a href="#">${userData.username}</a></td>
+                            <td onclick="editCell('address', this,${userData.userid})"><a href="#">${userData.address}</a></td>
                             </tr>
                         </tbody>
                     </table>`;
         $('.container.mt-5').append(table);
     }
+
+
+
     function createPaymentinfoTable(paymentData) {
         var table = `<table class="table">
                     <thead>
@@ -74,27 +79,65 @@ $(document).ready(function() {
     }
 
 
-    function createOrderTable(userData) {
+    function createOrderTable(orderData) {
         var table = `<table class="table">
                         <thead>
                             <tr>
+                               <th>Order ID</th>
                                <th>Date</th>
-                               <th>Product</th>
-                               <th>Quantity</th>
                                <th>Status</th>
+                               <th>Invoice</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>${userData.orderDate}</td>
-                                <td>${userData.orderItem}</td>
-                                <td>${userData.orderQuantity}</td>
-                                <td>${userData.orderStatus}</td>
-                            </tr>
-                        </tbody>
-                    </table>`;
+                    <tbody>`;
+
+        orderData.forEach(function(order){
+                       table += `    <tr>
+                                <td>${order.orderid}</td>
+                                <td>${order.orderDate}</td>
+                                <td>${order.state}</td>
+                                <td><a href="../sites/invoice.html?orderID=${order.orderid}">Link</a></td>
+                            </tr>`;
+                        });
+        table += `</tbody>
+                 </table>`;
         $('.container.mt-5').append(table);
     }
-
-
 });
+
+function editCell(fieldname, cell, userid){
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+    var currentValue = $(cell).text();
+    var newValue = prompt(`neuen Wert für ${fieldname} eingeben:`, currentValue);
+    if(newValue!==null){
+        var password = prompt(`Passwort zur Bestätigung eingeben: `);
+        if(password!==null){
+            changes = {
+                'field' : fieldname,
+                'newValue':newValue,
+                'password':password,
+                'userid': userid
+            }
+
+            var payload = {
+                type: 'changeUser',
+                data: changes
+            }
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: apiURL,  // Adjust path as necessary
+                data: JSON.stringify(payload),
+                success: function(response) {
+                    if (response.success) {
+                        // after successful update refresh page to show results
+                        location.reload();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Failed to fetch user data:', textStatus, errorThrown);
+                }
+            });
+        }
+    }
+}
