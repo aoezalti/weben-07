@@ -70,9 +70,9 @@ class UserDAO
 
             $stmt->execute();
 
-        } catch (PDOException $e) {
-            return ["error" => "Database error: " . $e->getMessage()];
         }
+        catch(PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];}
     }
 
     public function checkUser($userData)
@@ -84,6 +84,7 @@ class UserDAO
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':username', $user);
             $stmt->execute();
+
             $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userRecord) {
@@ -236,5 +237,37 @@ class UserDAO
             return ["error" => "Database error: " . $e->getMessage()];
         }
     }
+    public function getCustomerData()
+    {
+        $username = "Chris111";
+        $sql = "select salutation, firstname, lastname, address, plz, city from users where username = :username";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $username);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    public function getCustomerPaymentMethod()
+    {
+        $username = "Chris111";
+        $sql = "select p.pay_type, p.pay_info from paymentinformation p join users u where p.p_id = u.userid and u.username = :username";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $username);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
 
 }

@@ -1,13 +1,71 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <title>Go Organic</title>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Kassa</title>
+    <link href="..\res\css\styles.css" rel="stylesheet"/>
+
 </head>
-<body>
-    Kassa
+<body class="bg-light">
+<!-- Navbar/Header -->
+<div id="navbar-placeholder"></div>
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-1">
+            <h1 class="mb-4">Kassa</h1>
+            <div class="mb-1">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Kundendaten</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="form-label col-sm-2" >Name:</div>
+                            <div class="col-sm-8" id="username">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="form-label col-sm-2">Adresse:</div>
+                            <div class="col-sm-8" id="adress">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Produkte</h4>
+                    </div>
+                    <div class="card-body" id="productlist"></div>
+                    <div class="card-body" id="total"></div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Ihre Bezahlmethode</h4>
+                    </div>
+                    <div class="card-body" id="paymentmethode">
+
+                    </div>
+                </div>
+                <div class="card-body mb-4">
+                    <button class="btn btn-primary float-end" id="checkout">Jetzt kaufen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div id="footer-placeholder"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="../js/script.js" defer></script>
+<script src="../js/registration.js" defer></script>
+<script src="../js/cart.js" defer></script>
+<script src="../js/checkout.js " defer></script>
 </body>
 </html>

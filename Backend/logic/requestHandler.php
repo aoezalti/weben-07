@@ -13,7 +13,7 @@ class RequestHandler
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-      //  $this->userDAO = new UserDAO();
+        // $this->userDAO = new UserDAO();
         $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
@@ -64,6 +64,12 @@ class RequestHandler
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
+                    break;
+                case 'customerData':
+                    $response = $this->userDAO->getCustomerData();
+                    break;
+                case 'customerPaymentMethod':
+                    $response = $this->userDAO->getCustomerPaymentMethod();
                     break;
                 default:
                     $response = null;
