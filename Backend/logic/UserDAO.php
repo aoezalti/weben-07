@@ -239,11 +239,10 @@ class UserDAO
     }
     public function getCustomerData()
     {
-        $username = "Chris111";
-        $sql = "select salutation, firstname, lastname, address, plz, city from users where username = :username";
+        $sql = "select userid, salutation, firstname, lastname, address, plz, city from users where username = :username";
         try{
             $stmt = $this->db->conn->prepare($sql);
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':username', $_SESSION["username"]);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
@@ -255,11 +254,10 @@ class UserDAO
 
     public function getCustomerPaymentMethod()
     {
-        $username = "Chris111";
         $sql = "select p.pay_type, p.pay_info from paymentinformation p join users u where p.p_id = u.userid and u.username = :username";
         try{
             $stmt = $this->db->conn->prepare($sql);
-            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':username', $_SESSION["username"]);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $result;
@@ -269,5 +267,18 @@ class UserDAO
         }
     }
 
+    public function getVoucherInformation()
+    {
+        $sql = "select residual_value from vouchers v join users u where v.user_id=u.userid and u.username= :username;";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $_SESSION["username"]);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
 
 }

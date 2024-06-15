@@ -71,6 +71,9 @@ class RequestHandler
                 case 'customerPaymentMethod':
                     $response = $this->userDAO->getCustomerPaymentMethod();
                     break;
+                case 'getVoucherInformation':
+                    $response = $this->userDAO->getVoucherInformation();
+                    break;
                 default:
                     $response = null;
                     break;
@@ -136,7 +139,6 @@ class RequestHandler
                             $_SESSION["paymentData"] = $response["paymentData"];
                             $_SESSION["orderData"] = $response["orderData"];
                             $_SESSION["username"] = $userData['user'];
-
                         }
                     }
                     break;
@@ -147,7 +149,10 @@ class RequestHandler
                     $response = ["success" => "Logout successful!"];
                     break;
                 case 'orders':
-                    $this->cartDAO->setOrder($data);
+                    $response = $this->cartDAO->saveOrder($data);
+                    break;
+                case 'loginStatus':
+                    $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
                     break;
                 case 'changeUser':
                     include_once './userDAO.php';
@@ -164,9 +169,6 @@ class RequestHandler
                 break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
-                    break;
-                case 'loginStatus':
-                    $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
                     break;
             }
             if ($response !== null) {

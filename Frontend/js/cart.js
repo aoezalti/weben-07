@@ -42,7 +42,7 @@ $(document).ready(function () {
         updateCartCount();
         updateTotalPrice();
         displayCartItems();
-        console.log('Cart:', cart);
+        //console.log('Cart:', cart);
     }
 
     function updateCartCount() {

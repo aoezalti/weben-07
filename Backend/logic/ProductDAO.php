@@ -18,7 +18,6 @@ class ProductDAO
             try {
                 $stmt = $this->db->conn->prepare($sql);
                 $searchTerm = '%' . $search . '%';
-
                 $stmt->bindParam(':search1', $searchTerm);
                 $stmt->bindParam(':search2', $searchTerm);
                 $stmt->execute();
