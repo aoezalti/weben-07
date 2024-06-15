@@ -65,6 +65,9 @@ class RequestHandler
                 case 'customerPaymentMethod':
                     $response = $this->userDAO->getCustomerPaymentMethod();
                     break;
+                case 'getVoucherInformation':
+                    $response = $this->userDAO->getVoucherInformation();
+                    break;
                 default:
                     $response = null;
                     break;
@@ -94,8 +97,8 @@ class RequestHandler
             }
             switch ($type) {
                 case 'register':
-                    include_once './userDAO.php';
-                    $this->userDAO = new UserDAO();
+                    //include_once './userDAO.php';
+                    //$this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->registerUser($userData);
                         //set login
@@ -123,7 +126,8 @@ class RequestHandler
                     $response = ["success" => "Logout successful!"];
                     break;
                 case 'orders':
-                    $this->cartDAO->setOrder($data);
+                    $response = $this->cartDAO->saveOrder($data);
+                    break;
                 case 'loginStatus':
                     $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
                     break;

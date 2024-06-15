@@ -24,12 +24,12 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <div class="form-label col-sm-2" >Name:</div>
+                            <div class="form-label col-sm-2"><h6>Name:</h6></div>
                             <div class="col-sm-8" id="username">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="form-label col-sm-2">Adresse:</div>
+                            <div class="form-label col-sm-2"><h6>Adresse:</h6></div>
                             <div class="col-sm-8" id="adress">
                             </div>
                         </div>
@@ -42,12 +42,22 @@
                     <div class="card-body" id="productlist"></div>
                     <div class="card-body" id="total"></div>
                 </div>
+                <div class="card mb-4" id="voucher"></div>
+                <div class="card mb-4" id="residual_payment"></div>
+                <div class="card mb-4" id="credit-card"></div>
                 <div class="card mb-4">
                     <div class="card-header">
                         <h4>Ihre Bezahlmethode</h4>
                     </div>
                     <div class="card-body" id="paymentmethode">
-
+                        <form>
+                            <div class="form-group">
+                                <label for="payment-method">Wählen Sie eine Zahlungsart</label>
+                                <select class="form-control" id="payment-method" name="payment-method" required>
+                                    <option value="invoice">Rechnung</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="card-body mb-4">
