@@ -13,7 +13,7 @@ class RequestHandler
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-        // $this->userDAO = new UserDAO();
+      //  $this->userDAO = new UserDAO();
         $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
@@ -49,13 +49,21 @@ class RequestHandler
                 case 'products':
                     $response = $this->productDAO->getProducts($search);
                     break;
-                case 'user':
+                case 'customers':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->getCustomers($search);
                     break;
                 case 'productsByCategory':
                     $response = $this->productDAO->getProductsByCategory(isset($_GET['category']) ? $_GET['category'] : '');
                     break;
                 case 'productsById':
                     $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
+                    break;
+                case 'orders':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
                     break;
                 default:
                     $response = null;
@@ -77,7 +85,8 @@ class RequestHandler
             $data = json_decode(file_get_contents('php://input'), true);
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
-
+            $userChanges = isset($data['data']) ? $data['data'] : [];
+            $productData = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
             //sanitization
@@ -85,6 +94,19 @@ class RequestHandler
                 $userData[$key] = htmlspecialchars(strip_tags($value));
             }
             switch ($type) {
+                case 'toggleActive':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->toggleActive($userChanges);
+                    break;
+                case 'deleteProduct':
+                    $response = $this->productDAO->deleteProduct($productData);
+                    break;
+
+                case 'changeProduct':
+                    $response = $this->productDAO->changeProduct($productData);
+
+                    break;
                 case 'register':
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
@@ -101,10 +123,14 @@ class RequestHandler
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->checkUser($userData);
-                        if (isset($response["success"])) {
+                        if (isset($response["success"]) && $response["success"] === true) {
                             //set login
                             $_SESSION["loggedIn"] = true;
+                            $_SESSION["userRecord"] = $response["data"];
+                            $_SESSION["paymentData"] = $response["paymentData"];
+                            $_SESSION["orderData"] = $response["orderData"];
                             $_SESSION["username"] = $userData['user'];
+
                         }
                     }
                     break;
@@ -116,6 +142,20 @@ class RequestHandler
                     break;
                 case 'orders':
                     $this->cartDAO->setOrder($data);
+                    break;
+                case 'changeUser':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    if(!empty($userChanges)){
+
+                        $response = $this->userDAO->changeUser($userChanges);
+                        $_SESSION["userRecord"] = $response["data"];
+                        $_SESSION["paymentData"] = $response["paymentData"];
+                        $_SESSION["orderData"] = $response["orderData"];
+
+
+                    }
+                break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
                     break;

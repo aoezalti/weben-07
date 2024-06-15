@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=login';
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
 
     $('form').on('submit', function (event) {
         event.preventDefault(); // Prevent form submission
@@ -21,9 +21,15 @@ $(document).ready(function () {
             url: apiURL,
             data: JSON.stringify(payload),
             success: function (response) {
-                if (response.success === "Login successful!") {
+                if (response.success) {
+                    console.log("Admin:" + response.data['isAdmin']);
                     getLoginStatus();
-                    window.location.href = "index.html";
+                    //if user is admin goto admin page
+                    if(response.data['isAdmin'] === 1){
+                        window.location.href = "./adminarea.html";
+                    }else {
+                        window.location.href = "./profile.html";
+                    }
                 } else {
                     console.log("oh oh kein login möglich", response);
                 }
