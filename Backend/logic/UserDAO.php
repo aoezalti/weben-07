@@ -70,9 +70,9 @@ class UserDAO
 
             $stmt->execute();
 
-        } catch (PDOException $e) {
-            return ["error" => "Database error: " . $e->getMessage()];
         }
+        catch(PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];}
     }
 
     public function checkUser($userData)
@@ -84,6 +84,7 @@ class UserDAO
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':username', $user);
             $stmt->execute();
+
             $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userRecord) {
@@ -127,12 +128,12 @@ class UserDAO
     {
         try {
             $oderSQL = "SELECT 
-                      distinct  orders.orderid,
+                      distinct  orders.order_id,
                         orders.state,
-                        orders.order_date as orderDate    
+                        orders.orderdate as orderDate    
                     FROM orders 
-                    WHERE orders.userid = :userid
-                    ORDER BY orders.order_date ASC
+                    WHERE orders.user_id = :userid
+                    ORDER BY orders.orderdate ASC
                     ";
             $oderStmt = $this->db->prepare($oderSQL);
             $oderStmt->bindParam(':userid', $userId, PDO::PARAM_INT);
@@ -149,9 +150,9 @@ class UserDAO
     {
         try {
             $sql = "SELECT 
-                        orders.order_date, 
+                        orders.orderdate, 
                         orders.state,
-                        count(orders.productid) as productCount,
+                        orders.productquantity as productCount,
                          products.productname,
                         products.regularprice * count(orders.productid) as totalPrice ,
                         users.salutation,
@@ -162,9 +163,9 @@ class UserDAO
                         users.address
                     FROM orders 
                     left join products on orders.productid = products.productid
-                    left join users on orders.userid = users.userid
-                    WHERE orderid = :orderid
-                    group by orders.orderid
+                    left join users on orders.user_id = users.userid
+                    WHERE order_id = :orderid
+                    group by orders.order_id
                     ";
             $sqlstmt = $this->db->prepare($sql);
             $sqlstmt->bindParam(':orderid', $orderID, PDO::PARAM_INT);
@@ -234,6 +235,49 @@ class UserDAO
             return ["success" => true];
         } catch (PDOException $e) {
             return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+    public function getCustomerData()
+    {
+        $sql = "select userid, salutation, firstname, lastname, address, plz, city from users where username = :username";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $_SESSION["username"]);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    public function getCustomerPaymentMethod()
+    {
+        $sql = "select p.pay_type, p.pay_info from paymentinformation p join users u where p.p_id = u.userid and u.username = :username";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $_SESSION["username"]);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    public function getVoucherInformation()
+    {
+        $sql = "select residual_value from vouchers v join users u where v.user_id=u.userid and u.username= :username;";
+        try{
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':username', $_SESSION["username"]);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }catch (PDOException $e) {
+            return $e->getMessage();
         }
     }
 
