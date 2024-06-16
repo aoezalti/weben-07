@@ -66,6 +66,8 @@ class RequestHandler
                     $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
                     break;
                 case 'customerData':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getCustomerData();
                     break;
                 case 'customerPaymentMethod':

@@ -128,12 +128,12 @@ class UserDAO
     {
         try {
             $oderSQL = "SELECT 
-                      distinct  orders.orderid,
+                      distinct  orders.order_id,
                         orders.state,
-                        orders.order_date as orderDate    
+                        orders.orderdate as orderDate    
                     FROM orders 
-                    WHERE orders.userid = :userid
-                    ORDER BY orders.order_date ASC
+                    WHERE orders.user_id = :userid
+                    ORDER BY orders.orderdate ASC
                     ";
             $oderStmt = $this->db->prepare($oderSQL);
             $oderStmt->bindParam(':userid', $userId, PDO::PARAM_INT);
@@ -150,9 +150,9 @@ class UserDAO
     {
         try {
             $sql = "SELECT 
-                        orders.order_date, 
+                        orders.orderdate, 
                         orders.state,
-                        count(orders.productid) as productCount,
+                        orders.productquantity as productCount,
                          products.productname,
                         products.regularprice * count(orders.productid) as totalPrice ,
                         users.salutation,
@@ -163,9 +163,9 @@ class UserDAO
                         users.address
                     FROM orders 
                     left join products on orders.productid = products.productid
-                    left join users on orders.userid = users.userid
-                    WHERE orderid = :orderid
-                    group by orders.orderid
+                    left join users on orders.user_id = users.userid
+                    WHERE order_id = :orderid
+                    group by orders.order_id
                     ";
             $sqlstmt = $this->db->prepare($sql);
             $sqlstmt->bindParam(':orderid', $orderID, PDO::PARAM_INT);
