@@ -1,12 +1,13 @@
-const storedCart = localStorage.getItem('cart');
+let storedCart = localStorage.getItem('cart');
 let voucher = 0;
 let total = 0;
-let payment = "Rechnung"
+let payment = "";
 let customerpaymentmethod = [];
 let new_residual_value = 0;
 let usedVoucher = false;
 let userid;
 let creditinformation = 0;
+let discountid;
 
 $(document).ready(function () {
     $("#voucher").hide();
@@ -17,11 +18,20 @@ $(document).ready(function () {
     getCustomerPaymentmethod();
     getVoucherInformation();
 
+    $("#dicountcode_btn").on("click", function (event){
+        event.preventDefault();
+        discountcode = $("#discountcode").val()
+        checkDiscountCode(discountcode);
+        $("#discountcode").val("");
+    });
+
     $("#checkout").on("click", function (event){
         event.preventDefault();
-        saveOrder(usedVoucher);
-        alert("Danke für Ihre Bestellung!");
-        window.location.href = "index.html";
+        if (saveOrder(usedVoucher)) {
+            alert("Danke für Ihre Bestellung!");
+            clearCart()
+            window.location.href = "index.html";
+        }
     });
 
     // Wird ausgelöst, wenn sich die Paymentmethode (Auswahlliste aus der Datenbank) auf der HP ändert.
@@ -40,8 +50,61 @@ $(document).ready(function () {
 
     })
 
+    function checkDiscountCode(discountcode){
+        $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            data: {type: 'checkDiscountCode', discountcode: discountcode},
+            contentType: 'application/json',
+            xhrFields: {withCredentials: true},
+            success: function (response) {
+                if(response.length !== 0){
+                    discountid = response[0]['discount_id']
+                    displayDiscountInformation(response)
+                    console.log('Discountcode gueltig:', response);
+                } else {
+                    alert("Gutscheincode ungültig")
+                    console.log('Discountcode ungueltig:', response);
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('ajax request failed:', textStatus, errorThrown);
+            }
+        });
+    }
+
+    function displayDiscountInformation(discountinformation){
+        console.log(discountinformation);
+        $('#discount-card').hide();
+        let percentage = parseFloat(discountinformation[0]['discount'])/100
+        console.log(percentage);
+        total = total - (total * percentage);
+        console.log(total);
+        let discount = `
+            <div class="row align-items-center w-100">
+                <div class="col d-flex align-items-center position-relative">
+                    <span class="text-truncate" style="max-width: 200px; font-size: 0.875rem;"><h4>Rabatt:</h4></span>
+                </div>
+                <div class="col d-flex align-items-center position-relative">
+                    <span class="text-truncate" style="max-width: 200px; font-size: 0.875rem;"><h5>${discountinformation[0]['code']}</h5></span>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                  <span class="badge bg-primary rounded-pill">-${discountinformation[0]['discount']}%</span>
+                </div>
+              </div>
+        `
+        $('#total').empty()
+        displayTotalValue();
+        $('#discount').append(discount);
+        if (payment == "Gutschein"){
+            displayVoucherInformation();
+        }
+    }
+
     //Anzeige der Kreditkarteninformation
     function displayCreditcardInformation(){
+        payment= "Kreditkarte"
         $("#credit-card").empty();
         let creditcardinformation = `
             <div class="card-header">
@@ -147,8 +210,13 @@ $(document).ready(function () {
             `;
             orderItemsList.append(listItem);
         });
+        displayTotalValue();
+    }
+
+    function displayTotalValue(){
         const totalList = `
-                <li class="list-group-item">
+                <li class="list-group-item" id="discount"></li>
+                <li class="list-group-item" id="total">
                   <div class="row align-items-center w-100">
                     <div class="col d-flex align-items-center position-relative">
                         <span class="text-truncate" style="max-width: 200px; font-size: 0.875rem;"><h4>Total:</h4></span>
@@ -157,7 +225,7 @@ $(document).ready(function () {
                       <span class="badge bg-primary rounded-pill">€${total.toFixed(2)}</span>
                     </div>
                   </div>
-                </li>
+                </li> 
             `;
         $("#total").append(totalList);
     }
@@ -165,12 +233,18 @@ $(document).ready(function () {
     //Bestellung wird in die Datenbank geschrieben.
 
     function saveOrder(usedVoucher) {
+        if (payment == ""){
+            alert("Bitte Zahlungsmethode wählen!");
+            return false;
+        }
         let payload ={};
         let orderItems = JSON.parse(storedCart, true);
         if (usedVoucher){
             payload = {
                 type: 'orders',
                 userid: userid,
+                total: total,
+                discountid: discountid,
                 items: orderItems,
                 paymentmethod: payment,
                 usedVoucher: usedVoucher,
@@ -180,6 +254,8 @@ $(document).ready(function () {
             payload = {
                 type: 'orders',
                 userid: userid,
+                total: total,
+                discountid: discountid,
                 items: orderItems,
                 paymentmethod: payment,
                 usedVoucher: usedVoucher
@@ -198,6 +274,7 @@ $(document).ready(function () {
                 console.log('ajax request failed:', textStatus, errorThrown);
             }
         });
+        return true;
     }
 
     //Zahlungsmethode des Kunden aus der Datenbank auslesen

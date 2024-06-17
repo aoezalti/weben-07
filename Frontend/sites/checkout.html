@@ -54,15 +54,30 @@
                             <div class="form-group">
                                 <label for="payment-method">Wählen Sie eine Zahlungsart</label>
                                 <select class="form-control" id="payment-method" name="payment-method" required>
-                                    <option value="invoice">Rechnung</option>
+                                    <option selected disabled>Ihre Zahlungsarten</option>
                                 </select>
                             </div>
                         </form>
                     </div>
                 </div>
+                <div class="card mb-4" id="discount-card">
+                    <div class="card-header">
+                        <h4>Haben Sie einen Gutscheincode?</h4>
+                    </div>
+                    <div class="card-body" id="discount">
+                        <p class="card-text mb-4"><h6>Geben Sie hier Ihren 5-stelligen Discount-Code ein:</h6></p>
+                        <div class="input-group mb-4">
+                            <input type="text" class="form-control" placeholder="Discount Code" aria-label="Discount Code" id="discountcode">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="dicountcode_btn">Einlösen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body mb-4">
                     <button class="btn btn-primary float-end" id="checkout">Jetzt kaufen</button>
                 </div>
+
             </div>
         </div>
     </div>
