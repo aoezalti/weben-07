@@ -110,6 +110,24 @@ class RequestHandler
                 $userData[$key] = htmlspecialchars(strip_tags($value));
             }
             switch ($type) {
+                case 'changePassword':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->changePassword($data["data"]);
+
+                    break;
+                case 'addPaymentInfo':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->addPaymentInfo($data["data"]);
+                    $_SESSION["paymentData"] = $response["paymentData"];
+                    break;
+                case 'deletePaymentInfo':
+                    include_once './userDAO.php';
+                    $this->userDAO = new UserDAO();
+                    $response = $this->userDAO->deletePaymentInfo($data["data"]);
+                    $_SESSION["paymentData"] = $response["paymentData"];
+                    break;
                 case 'toggleActive':
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
@@ -121,16 +139,21 @@ class RequestHandler
 
                 case 'changeProduct':
                     $response = $this->productDAO->changeProduct($productData);
-
                     break;
                 case 'register':
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->registerUser($userData);
-                        //set login
-                        if (isset($response["success"])) {
+                        sleep(1);
+                        $response = $this->userDAO->checkUser($userData);
+                        if (isset($response["success"]) && $response["success"] === true) {
+                            //set login
                             $_SESSION["loggedIn"] = true;
+                            $_SESSION["userRecord"] = $response["data"];
+                            $_SESSION["paymentData"] = $response["paymentData"];
+                            $_SESSION["orderData"] = $response["orderData"];
+                            $_SESSION["username"] = $userData['user'];
                         }
                     }
                     break;
@@ -165,13 +188,10 @@ class RequestHandler
                     include_once './userDAO.php';
                     $this->userDAO = new UserDAO();
                     if(!empty($userChanges)){
-
                         $response = $this->userDAO->changeUser($userChanges);
                         $_SESSION["userRecord"] = $response["data"];
                         $_SESSION["paymentData"] = $response["paymentData"];
                         $_SESSION["orderData"] = $response["orderData"];
-
-
                     }
                     break;
                 default:
