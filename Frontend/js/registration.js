@@ -11,8 +11,8 @@ $(document).ready(function () {
             plz: $('#plz').val(),
             ort: $('#ort').val(),
             email: $('#email').val(),
-            benutzername: $('#benutzername').val(),
-            passwort: $('#passwort').val(),
+            user: $('#benutzername').val(),
+            password: $('#passwort').val(),
             passwortVerify: $('#passwortVerify').val(),
             zahlungsinformationen: $('#zahlungsinformationen').val(),
             zahlungstyp: $('#zahlungstyp').val()
@@ -33,8 +33,11 @@ $(document).ready(function () {
             url: apiURL,
             data: JSON.stringify(payload),
             success: function (response) {
-                if (response.success === "Registration successful!") {
-                    window.location.href = "index.html";
+                console.log("Response success type:", typeof response.success); // Check the type
+                console.log("Response success value:", response.success); // Check the value
+
+                if (response.success) {
+                    window.location.href = "profile.html";
                 } else {
                     console.log("oh oh keine Registrierung möglich",response);
                 }
