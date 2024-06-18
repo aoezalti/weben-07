@@ -25,10 +25,11 @@ class UserDAO
             $passwort = $userData['passwort'];
             $zahlungsinformationen = $userData['zahlungsinformationen'];
             $zahlungstyp = $userData['zahlungstyp'];
+            $isAdmin = 0;
 
             $hashedPassword = password_hash($passwort, PASSWORD_DEFAULT);
 
-            $sql = "INSERT INTO users (mail, salutation, firstname, lastname, address, plz, city, username, password) VALUES (:email, :anrede, :vorname, :nachname, :adresse, :plz, :ort, :benutzername, :hashedPassword)";
+            $sql = "INSERT INTO users (mail, salutation, firstname, lastname, address, plz, city, username, password, isAdmin) VALUES (:email, :anrede, :vorname, :nachname, :adresse, :plz, :ort, :benutzername, :hashedPassword, :isAdmin)";
             $stmt = $this->db->prepare($sql);
 
             // Binding parameters
@@ -41,6 +42,7 @@ class UserDAO
             $stmt->bindParam(':ort', $ort);
             $stmt->bindParam(':benutzername', $benutzername);
             $stmt->bindParam(':hashedPassword', $hashedPassword);
+            $stmt->bindParam(':isAdmin', $isAdmin);
             //$stmt->bindParam(':zahlungsinformationen', $zahlungsinformationen);
 
             $stmt->execute();

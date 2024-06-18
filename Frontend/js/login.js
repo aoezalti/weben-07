@@ -36,6 +36,7 @@ $(document).ready(function () {
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('ajax request failed:', textStatus, errorThrown);
+                console.log(jqXHR.responseText)
             }
         })
     }

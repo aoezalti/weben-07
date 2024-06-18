@@ -146,6 +146,7 @@ class RequestHandler
                             $_SESSION["paymentData"] = $response["paymentData"];
                             $_SESSION["orderData"] = $response["orderData"];
                             $_SESSION["username"] = $userData['user'];
+                            $_SESSION["isAdmin"] = $response["data"]["isAdmin"];
                         }
                     }
                     break;
@@ -159,7 +160,18 @@ class RequestHandler
                     $response = $this->cartDAO->saveOrder($data);
                     break;
                 case 'loginStatus':
-                    $response = isset($_SESSION["username"]) ? ["username" => $_SESSION["username"]] : ["username" => null];
+                    if(isset($_SESSION["username"])) {
+                        $response = [
+                            "username" => $_SESSION["username"],
+                            "isAdmin" => $_SESSION['isAdmin']
+                        ];
+                    }
+                    else {
+                        $response = [
+                            "username" => null,
+                            "isAdmin" => null
+                        ];
+                    }
                     break;
                 case 'changeUser':
                     include_once './userDAO.php';
