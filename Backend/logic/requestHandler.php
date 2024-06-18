@@ -111,6 +111,20 @@ class RequestHandler
 
 
             switch ($type) {
+                case 'deleteOrder':
+                    $response = $this ->userDAO->deleteOrder($data["data"]);
+                    break;
+
+                case 'deleteProductFromOrder':
+                    $response = $this ->userDAO->deleteProductFromOrder($data["data"]);
+                    break;
+                case 'updateOrder':
+                    $response = $this ->userDAO->updateOrder($data["data"]);
+                    break;
+                case 'getOrders':
+                    $response = $this ->userDAO->getAllOrdersByCustomer($data["data"]);
+                    break;
+
                 case 'changePassword':
                 //  include_once './userDAO.php';
                 //    $this->userDAO = new UserDAO();

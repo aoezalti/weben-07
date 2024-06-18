@@ -91,6 +91,106 @@ function toggleActive(customer,isActive, field){
         });
 }
 
-function getOrders(customer){
+function getOrders(customerId){
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+    var payload = {
+        type: 'getOrders',
+        data: {
+            userid: customerId
+        }
+    };
 
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: apiURL,
+        data: JSON.stringify(payload),
+        success: function(response) {
+            if (response[0]!==null) {
+
+                displayOrders(response);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to fetch orders:', textStatus, errorThrown);
+        }
+    });
 }
+
+function displayOrders(orders) {
+    var ordersTable = `<table class="table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Delete</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+    orders.forEach(order => {
+        ordersTable += `<tr>
+            <td>${order.order_id}</td>
+            <td>${order.productname}</td>
+            <td>${order.productCount}</td>
+<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="editOrder(${order.order_id}, '${order.productname}', ${order.productCount})">Delete</td>
+        </tr>`;
+    });
+
+    ordersTable += `</tbody></table>`;
+
+//    $('#ordersModal').html('<p>Test content</p>').show();  // Directly use a simple string
+
+    $('#modalBody').html(ordersTable)
+    $('#ordersModal').show();  // Assuming you have a modal or a div with this ID
+    $('.close').click(function() {
+        $('#ordersModal').hide();
+    });
+}
+
+function editOrder(order_id, productname,productCount) {
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+    var newproductCount = parseInt(productCount)-1;
+
+    if(newproductCount===0){
+        var type = 'deleteProductFromOrder';
+    }else if(newproductCount>=0){
+        var type = 'updateOrder';
+    } else{
+        var type = 'deleteOrder';
+    }
+
+    var payload = {
+        type: type,
+        data: {
+            order_id: order_id,
+            productCount: newproductCount,
+            productname: productname
+        }
+    };
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: apiURL,
+        data: JSON.stringify(payload),
+        success: function(response) {
+            if (response === true) {
+                location.reload();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Failed to fetch order details:', textStatus, errorThrown);
+        }
+    });
+}
+
+
+// Close modal if clicked outside
+window.onclick = function(event) {
+    if (event.target == document.getElementById('ordersModal')) {
+        $('#ordersModal').hide();
+    }
+};
