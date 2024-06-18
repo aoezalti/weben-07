@@ -99,16 +99,17 @@ class RequestHandler
     {
         try {
             $data = json_decode(file_get_contents('php://input'), true);
+
+            //sanitization
+            $data = sanitize_input($data);
+
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
             $userChanges = isset($data['data']) ? $data['data'] : [];
             $productData = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
-            //sanitization
-            foreach ($userData as $key => $value) {
-                $userData[$key] = htmlspecialchars(strip_tags($value));
-            }
+
             switch ($type) {
                 case 'changePassword':
                 //  include_once './userDAO.php';
@@ -237,6 +238,18 @@ class RequestHandler
             echo json_encode($data);
         }
     }
+}
+
+// function that accepts input, if it is an array -> self call, if value -> sanitize
+function sanitize_input($input) {
+    if (is_array($input)) {
+        foreach ($input as $key => $value) {
+            $input[$key] = sanitize_input($value);
+        }
+    } else {
+        $input = htmlspecialchars(strip_tags($input));
+    }
+    return $input;
 }
 
 $api = new RequestHandler();
