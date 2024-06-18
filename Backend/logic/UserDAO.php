@@ -21,8 +21,8 @@ class UserDAO
             $adresse = $userData['adresse'];
             $plz = $userData['plz'];
             $ort = $userData['ort'];
-            $benutzername = $userData['benutzername'];
-            $passwort = $userData['passwort'];
+            $benutzername = $userData['user'];
+            $passwort = $userData['password'];
             $zahlungsinformationen = $userData['zahlungsinformationen'];
             $zahlungstyp = $userData['zahlungstyp'];
             $isAdmin = 0;
@@ -111,7 +111,8 @@ class UserDAO
     function getPaymentInformation($userId)
     {
         try {
-            $paymentSql = "SELECT pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
+
+            $paymentSql = "SELECT userid, p_id, pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
             $paymentStmt = $this->db->prepare($paymentSql);
             $paymentStmt->bindParam(':userid', $userId, PDO::PARAM_INT);
             $paymentStmt->execute();
@@ -130,7 +131,7 @@ class UserDAO
         try {
             $oderSQL = "SELECT 
                       distinct  orders.order_id,
-                        orders.state,
+                                orders.total,
                         orders.orderdate as orderDate    
                     FROM orders 
                     WHERE orders.user_id = :userid
@@ -150,28 +151,30 @@ class UserDAO
     public function getOrdersByID($orderID)
     {
         try {
-            $sql = "SELECT 
-                        orders.orderdate, 
-                        orders.state,
-                        orders.productquantity as productCount,
-                         products.productname,
-                        products.regularprice * count(orders.productid) as totalPrice ,
-                        users.salutation,
-                        users.firstname,
-                        users.lastname,
-                        users.plz,
-                        users.city,
-                        users.address
-                    FROM orders 
-                    left join products on orders.productid = products.productid
-                    left join users on orders.user_id = users.userid
-                    WHERE order_id = :orderid
-                    group by orders.order_id
+            $sql = "SELECT
+    orders.order_id,
+    orders.orderdate,
+    orderitems.quantity AS productCount,
+    orders.total,
+    products.productname,
+    orderitems.price * orderitems.quantity AS totalPrice,
+    users.salutation,
+    users.firstname,
+    users.lastname,
+    users.plz,
+    users.city,
+    users.address
+FROM orders
+LEFT JOIN orderitems ON orderitems.order_id = orders.order_id
+LEFT JOIN products ON products.productid = orderitems.product_id
+LEFT JOIN users ON orders.user_id = users.userid
+WHERE orders.order_id = :orderid
+                    
                     ";
             $sqlstmt = $this->db->prepare($sql);
             $sqlstmt->bindParam(':orderid', $orderID, PDO::PARAM_INT);
             $sqlstmt->execute();
-            $order = $sqlstmt->fetch(PDO::FETCH_ASSOC);
+            $order = $sqlstmt->fetchall(PDO::FETCH_ASSOC);
             return $order;
         } catch (PDOException $e) {
 
@@ -281,5 +284,103 @@ class UserDAO
             return $e->getMessage();
         }
     }
+
+    public function deletePaymentInfo($data){
+        $p_id = $data["p_id"];
+        try {
+            // Prepare and execute the delete statement
+            $sql = "DELETE FROM paymentinformation WHERE p_id = :p_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':p_id', $p_id, PDO::PARAM_INT);
+            $stmt->execute(); // This line is crucial to actually perform the deletion
+
+            // After deletion, fetch updated user payment info
+            try {
+                $select = "SELECT userid, p_id, pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
+                $stmt = $this->db->prepare($select);
+                $stmt->bindParam(':userid', $data["userid"], PDO::PARAM_INT);
+                $stmt->execute();
+                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                return ["error" => "Database error: " . $e->getMessage()];
+            }
+            return ["paymentData" => $result];
+
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function addPaymentInfo($data){
+        //check password
+        try {
+            $select = "select password from users where userid = :userid";
+            $stmt = $this->db->prepare($select);
+            $stmt->bindParam(':userid', $_SESSION["userRecord"]["userid"], PDO::PARAM_INT);
+            $stmt->execute();
+            $record = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        }catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+        if(password_verify($data['password'],$record['password'])){
+
+        //update pay info
+        try {
+            $sql = "insert into paymentinformation (userid, pay_type, pay_info) values (:userid, :pay_type, :pay_info)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':userid', $_SESSION["userRecord"]["userid"], PDO::PARAM_INT);
+            $stmt->bindParam(':pay_type', $data["pay_type"], PDO::PARAM_STR);
+            $stmt->bindParam(':pay_info', $data["pay_info"], PDO::PARAM_STR);
+            $stmt->execute();
+            // After adding, fetch updated user payment info
+            try{
+                $select = "SELECT userid, p_id, pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
+                $stmt = $this->db->prepare($select);
+                $stmt->bindParam(':userid', $_SESSION["userRecord"]["userid"], PDO::PARAM_INT);
+                $stmt->execute();
+                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                return ["error" => "Database error: " . $e->getMessage()];
+            }
+            return ["paymentData" => $result];
+
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+
+    }}
+
+    public function changePassword($data){
+
+        try {
+            $select = "SELECT password FROM users WHERE userid = :userid";
+            $stmt = $this->db->prepare($select);
+            $stmt->bindParam(':userid', $_SESSION["userRecord"]["userid"], PDO::PARAM_INT);
+            $stmt->execute();
+            $record = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+
+        if (password_verify($data['old_password'], $record['password'])) {
+            $hashedPassword = password_hash($data["new_password"], PASSWORD_DEFAULT);
+            try {
+                $sql = "UPDATE users SET password = :password WHERE userid = :userid";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+                $stmt->bindParam(':userid', $_SESSION["userRecord"]["userid"], PDO::PARAM_INT);
+                $stmt->execute();
+                return true;  // Return true on successful update
+            } catch (PDOException $e) {
+                return ["error" => "Database error: " . $e->getMessage()];
+            }
+        } else {
+            return ["error" => "Password verification failed"];
+        }
+    }
+
+
+
 
 }

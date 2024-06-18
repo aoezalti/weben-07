@@ -53,14 +53,13 @@ $(document).ready(function() {
         $('.container.mt-5').append(table);
     }
 
-
-
     function createPaymentinfoTable(paymentData) {
         var table = `<table class="table">
                     <thead>
                         <tr>
                            <th>Type</th>
                            <th>Value</th>
+                           <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -69,6 +68,7 @@ $(document).ready(function() {
             table += `<tr>
                     <td>${payment.paymentType}</td>
                     <td>${payment.paymentInfo}</td>
+                    <td onclick="removePaymentInfo(${payment.p_id},${payment.userid})"><a href="#">Remove</a></td>
                   </tr>`;
         });
 
@@ -78,14 +78,13 @@ $(document).ready(function() {
         $('.container.mt-5').append(table);
     }
 
-
     function createOrderTable(orderData) {
         var table = `<table class="table">
                         <thead>
                             <tr>
                                <th>Order ID</th>
                                <th>Date</th>
-                               <th>Status</th>
+                               <th>Total</th>
                                <th>Invoice</th>
                             </tr>
                         </thead>
@@ -93,10 +92,10 @@ $(document).ready(function() {
 
         orderData.forEach(function(order){
                        table += `    <tr>
-                                <td>${order.orderid}</td>
+                                <td>${order.order_id}</td>
                                 <td>${order.orderDate}</td>
-                                <td>${order.state}</td>
-                                <td><a href="../sites/invoice.html?orderID=${order.orderid}">Link</a></td>
+                                <td>${order.total}</td>
+                                <td><a href="../sites/invoice.html?orderID=${order.order_id}">Link</a></td>
                             </tr>`;
                         });
         table += `</tbody>
@@ -141,3 +140,169 @@ function editCell(fieldname, cell, userid){
         }
     }
 }
+
+
+function removePaymentInfo(paymentInfo, userid) {
+    var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+    var changes = {
+        'userid': userid,
+        'p_id': paymentInfo
+    };
+
+    var payload = {
+        type: 'deletePaymentInfo',
+        data: changes
+    };
+
+    console.log("Sending payload:", JSON.stringify(payload));  // Log the payload for debugging
+
+    $.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        url: apiURL,
+        data: JSON.stringify(payload),
+        success: function(response) {
+            console.log("Response received:", response);
+            location.reload();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX call failed:', textStatus, errorThrown);
+        }
+    });
+}
+
+
+// add payment info
+document.getElementById('loadFormButton').addEventListener('click', function() {
+    const formHTML = `
+        <div class="container mt-3">
+            <h2 class="mb-3">Zahlungsmethode hinzufügen</h2>
+            <form id="paymentForm">
+                <div class="mb-3">
+                    <label for="zahlungstyp" class="form-label">Zahlungstyp</label>
+                    <input type="text" class="form-control" id="zahlungstyp" required placeholder="Z.B. Kreditkarte, Gutschein">
+                </div>
+                <div class="mb-3">
+                    <label for="zahlungsinformationen" class="form-label">Zahlungsinformationen</label>
+                    <input type="text" class="form-control" id="zahlungsinformationen" required placeholder="Z.B. Kartennummer">
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Passwort</label>
+                    <input type="password" class="form-control" id="password_confirmation" required placeholder="Passwort eingeben">
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        </div>
+    `;
+    document.getElementById('paymentFormContainer').innerHTML = formHTML;
+    attachFormSubmitHandler();
+});
+
+function attachFormSubmitHandler() {
+    const paymentForm = document.getElementById('paymentForm');
+    paymentForm.addEventListener('submit', function(e) {
+        e.preventDefault();  // Prevent the default form submission
+        var zahlungstyp = document.getElementById('zahlungstyp').value;
+        var zahlungsinformationen = document.getElementById('zahlungsinformationen').value;
+        var password = document.getElementById('password_confirmation').value;
+
+        var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+        var changes = {
+            'pay_info': zahlungsinformationen,
+            'pay_type': zahlungstyp,
+            'password': password
+        };
+
+        var payload = {
+            type: 'addPaymentInfo',
+            data: changes
+        };
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            url: apiURL,
+            data: JSON.stringify(payload),
+            success: function(response) {
+                console.log("Response received:", response);
+                location.reload();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX call failed:', textStatus, errorThrown);
+            }
+        });
+
+
+    });
+}
+document.getElementById('loadPWFormButton').addEventListener('click', function() {
+    const formHTML = `
+        <div class="container mt-3">
+            <h2 class="mb-3">Passwort ändern</h2>
+            <form id="PWForm">
+                 <div class="mb-3">
+                    <label for="passwort" class="form-label">Passwort</label>
+                    <input type="password" class="form-control" id="passwort" required>
+                </div>
+                <div class="mb-3">
+                    <label for="passwortVerify" class="form-label">Passwort bestätigen</label>
+                    <input type="password" class="form-control" id="passwortVerify" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label"> Altes Passwort</label>
+                    <input type="password" class="form-control" id="password_confirmation" required placeholder="Passwort eingeben">
+                </div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </form>
+        </div>
+        
+    `;
+    document.getElementById('passwordFormContainer').innerHTML = formHTML;
+    attachPWFormSubmitHandler();
+});
+
+function attachPWFormSubmitHandler() {
+    const paymentForm = document.getElementById('PWForm');
+    paymentForm.addEventListener('submit', function(e) {
+        e.preventDefault();  // Prevent the default form submission
+        var password = document.getElementById('passwort').value;
+        var confirm = document.getElementById('passwortVerify').value;
+        var old_password = document.getElementById('password_confirmation').value;
+
+        if (password !== confirm) {
+            alert("Passwörter stimmen nicht überein!");
+        } else {
+            var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+            var changes = {
+                'new_password': password,
+                'old_password': old_password
+            };
+
+            var payload = {
+                type: 'changePassword',
+                data: changes
+            };
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                url: apiURL,
+                data: JSON.stringify(payload),
+                success: function(response) {
+                    console.log("Response received:", response);
+                    location.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('AJAX call failed:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+}
+
+
+
+
+
+
