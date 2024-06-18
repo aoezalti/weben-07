@@ -111,7 +111,8 @@ class UserDAO
     function getPaymentInformation($userId)
     {
         try {
-            $paymentSql = "SELECT pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
+
+            $paymentSql = "SELECT userid, p_id, pay_type as paymentType, pay_info as paymentInfo FROM paymentinformation WHERE userid = :userid";
             $paymentStmt = $this->db->prepare($paymentSql);
             $paymentStmt->bindParam(':userid', $userId, PDO::PARAM_INT);
             $paymentStmt->execute();
