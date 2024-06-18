@@ -34,7 +34,7 @@ $(document).ready(function () {
                 productid: product.productid,
                 name: product.productname,
                 price: product.insale === 1 ? product.specialprice : product.regularprice,
-                image: product.imgpath,
+                image: product.imgpath.startsWith('../../Backend/productpictures/') ? product.imgpath : '../../Backend/productpictures/' + product.imgpath,
                 quantity: 1
             });
         }

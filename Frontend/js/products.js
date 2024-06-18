@@ -100,8 +100,12 @@ $(document).ready(function () {
     }
 
     function addProductImage(container, product) {
+        let imgPath = product.imgpath;
+        if (!imgPath.startsWith('../../Backend/productpictures/')) {
+            imgPath = '../../Backend/productpictures/' + imgPath;
+        }
         $('<img class="card-img-top product-img">')
-            .attr('src', product.imgpath)
+            .attr('src', imgPath)
             .attr('alt', product.altimg)
             .appendTo(container);
     }
