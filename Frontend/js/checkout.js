@@ -6,6 +6,8 @@ let additionalpayment = "";
 let customerpaymentmethod = [];
 let new_residual_value = 0;
 let usedVoucher = false;
+let additionalPaymethode = false;
+let control = false;
 let userid;
 let discountid;
 
@@ -40,6 +42,7 @@ $(document).ready(function () {
         console.log(selectedValue);
         displayPaymentInformation(selectedValue, "#additional-paymentmethod");
         additionalpayment = selectedValue;
+        control = true;
     })
 
 
@@ -138,6 +141,7 @@ $(document).ready(function () {
         if (new_residual_value < 0){
             let topay = new_residual_value * (-1);
             new_residual_value = 0;
+            additionalPaymethode = true;
             displayResidualPayment(topay);
         }
         $("#voucher").empty();
@@ -241,6 +245,10 @@ $(document).ready(function () {
         }
         if (payment === ""){
             alert("Bitte Zahlungsmethode wählen!");
+            return false;
+        }
+        if (!control && additionalPaymethode){
+            alert("Bitte Zahlungsmethode für die Restzahlung wählen!");
             return false;
         }
         let payload ={};
