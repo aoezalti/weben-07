@@ -181,7 +181,11 @@ document.getElementById('loadFormButton').addEventListener('click', function() {
             <form id="paymentForm">
                 <div class="mb-3">
                     <label for="zahlungstyp" class="form-label">Zahlungstyp</label>
-                    <input type="text" class="form-control" id="zahlungstyp" required placeholder="Z.B. Kreditkarte, Gutschein">
+                    <select class="form-select" id="zahlungstyp" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="Kreditkarte">Kreditkarte</option>
+                        <option value="PayPal">PayPal</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="zahlungsinformationen" class="form-label">Zahlungsinformationen</label>
