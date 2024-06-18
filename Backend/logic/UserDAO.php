@@ -90,7 +90,8 @@ class UserDAO
             $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userRecord) {
-                if (password_verify($password, $userRecord['password'])) {
+                // check password and active status
+                if (password_verify($password, $userRecord['password']) &&$userRecord['isActive'] === 1) {
 
                     $paymentRecords = $this->getPaymentInformation($userRecord['userid']);
                     $orderRecords = $this->getOrderRecords($userRecord['userid']);
