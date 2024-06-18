@@ -1,6 +1,7 @@
 var products = [];
 var categories = ["Alle Produkte"];
 var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
+var isAdmin = 0;
 
 $(document).ready(function () {
     $("#navbar-placeholder").load("../sites/navbar.html", function () {
@@ -67,6 +68,14 @@ function attachNavbarEvents() {
             console.log("Draggable element is out of the droppable element");
         }
     });
+    $("#welcomeUser").on("click", function () {
+        console.log('isAdmin:', isAdmin)
+        if (isAdmin === 1) {
+            window.location.href = "adminarea.html";
+        } else {
+            window.location.href = "profile.html";
+        }
+    });
 }
 
 function getLoginStatus() {
@@ -79,6 +88,9 @@ function getLoginStatus() {
         success: function (response) {
             console.log('getLoginStatus response:', response);
             updateNavbar(response.username);
+            if (response.isAdmin !== null) {
+                isAdmin = response.isAdmin;
+            }
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('Login status request failed:', textStatus, errorThrown);

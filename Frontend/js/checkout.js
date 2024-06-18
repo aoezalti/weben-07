@@ -38,7 +38,7 @@ $(document).ready(function () {
 
     $("#payment-method").on("change", function (){
         $("#voucher").hide();
-        $("#residual_payment").hide()
+        $("#residual_payment").hide();
         $("#credit-card").hide();
         let selectedValue =$(this).val();
         if (selectedValue === "Gutschein"){
@@ -97,7 +97,7 @@ $(document).ready(function () {
         $('#total').empty()
         displayTotalValue();
         $('#discount').append(discount);
-        if (payment == "Gutschein"){
+        if (payment === "Gutschein"){
             displayVoucherInformation();
         }
     }
@@ -233,7 +233,7 @@ $(document).ready(function () {
     //Bestellung wird in die Datenbank geschrieben.
 
     function saveOrder(usedVoucher) {
-        if (payment == ""){
+        if (payment === ""){
             alert("Bitte Zahlungsmethode wählen!");
             return false;
         }
