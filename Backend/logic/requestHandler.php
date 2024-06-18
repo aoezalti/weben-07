@@ -2,18 +2,19 @@
 
 include_once './ProductDAO.php';
 include_once './cartDAO.php';
+include_once './userDAO.php';
 
 
 class RequestHandler
 {
     private $productDAO;
     private $userDAO;
-
+    private $cartDAO;
 
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
-        // $this->userDAO = new UserDAO();
+        $this->userDAO = new UserDAO();
         $this->cartDAO = new cartDAO();
         $this->processRequest();
     }
@@ -44,6 +45,7 @@ class RequestHandler
             $type = isset($_GET['type']) ? $_GET['type'] : '';
             $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
             $search = isset($_GET['search']) ? $_GET['search'] : '';
+            $discountcode = isset($_GET['discountcode']) ? $_GET['discountcode'] : '';
 
             switch ($type) {
                 case 'products':
@@ -75,6 +77,9 @@ class RequestHandler
                     break;
                 case 'getVoucherInformation':
                     $response = $this->userDAO->getVoucherInformation();
+                    break;
+                case 'checkDiscountCode':
+                    $response = $this->cartDAO->checkDiscountCode($discountcode);
                     break;
                 default:
                     $response = null;
@@ -168,7 +173,7 @@ class RequestHandler
 
 
                     }
-                break;
+                    break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
                     break;

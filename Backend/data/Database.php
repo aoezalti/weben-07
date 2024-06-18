@@ -35,4 +35,9 @@ class Database
     {
         return $this->conn->prepare($query);
     }
+
+    public function lastInsertId()
+    {
+        return $this->conn->lastInsertId();
+    }
 }
