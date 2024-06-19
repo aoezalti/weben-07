@@ -3,6 +3,7 @@
 
 Wilkommen bei unserem Webshop namens 'Go Organic' - ein Shop für lokale Bio-Produkte
 
+Hier befindet sich das Github-Project für die Issues: https://github.com/users/aoezalti/projects/3/views/1
 ## Installation
 
 So startest du das Projekt lokal:
