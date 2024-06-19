@@ -26,13 +26,13 @@ $(document).ready(function() {
                         <table class="table">
                         <thead>
                             <tr>
-                                <th>Salutation</th>
-                                <th>Firstname</th>
-                                <th>Lastname</th>
+                                <th>Anrede</th>
+                                <th>Vorname</th>
+                                <th>Nachname</th>
                                 <th>PLZ</th>
-                                <th>City</th>
-                                <th>Email</th>
-                                <th>Address</th>
+                                <th>Ort</th>
+                                <th>Mail</th>
+                                <th>Addresse</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,10 +85,10 @@ $(document).ready(function() {
         var table = `<table class="table">
                         <thead>
                             <tr>
-                               <th>Order ID</th>
-                               <th>Date</th>
-                               <th>Total</th>
-                               <th>Invoice</th>
+                               <th>Bestellungs ID</th>
+                               <th>Bestelldatum</th>
+                               
+                               <th>Rechnung</th>
                             </tr>
                         </thead>
                     <tbody>`;
@@ -97,7 +97,7 @@ $(document).ready(function() {
                        table += `    <tr>
                                 <td>${order.order_id}</td>
                                 <td>${order.orderDate}</td>
-                                <td>${order.total}</td>
+                                
                                 <td><a href="../sites/invoice.html?orderID=${order.order_id}">Link</a></td>
                             </tr>`;
                         });

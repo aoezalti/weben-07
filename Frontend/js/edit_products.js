@@ -37,17 +37,17 @@ function createProductTable(products) {
     var table = `<table class="table">
                     <thead>
                         <tr>
-                            <th>Product ID</th>
-                            <th>Product Name</th>
-                            <th>Regular Price</th>
-                            <th>Category</th>
-                            <th>Image</th>
-                            <th>In Sale</th>
-                            <th>All Reviews</th>
-                            <th>Current Review</th>
-                            <th>Alt Image</th>
-                            <th>Special Price</th>
-                            <th>Delete Item</th>
+                            <th>Produkt ID</th>
+                            <th>Produkt Name</th>
+                            <th>Regulärer Preis</th>
+                            <th>Kategorie</th>
+                            <th>Bild Link</th>
+                            <th>Im Abverkauf</th>
+                            <th>Bewertunganszahl</th>
+                            <th>Rating</th>
+                            <th>Bildbeschreibung</th>
+                            <th>Spezialpreis</th>
+                            <th>Entfernen</th>
                         </tr>
                     </thead>
                     <tbody>`;

@@ -156,7 +156,7 @@ class UserDAO
     orders.order_id,
     orders.orderdate,
     orderitems.quantity AS productCount,
-    orders.total,
+    round(sum(orderitems.price * orderitems.quantity),2) as total,
     products.productname,
     orderitems.price * orderitems.quantity AS totalPrice,
     users.salutation,
