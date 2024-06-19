@@ -2,11 +2,13 @@ let storedCart = localStorage.getItem('cart');
 let voucher = 0;
 let total = 0;
 let payment = "";
+let additionalpayment = "";
 let customerpaymentmethod = [];
 let new_residual_value = 0;
 let usedVoucher = false;
+let additionalPaymethode = false;
+let control = false;
 let userid;
-let creditinformation = 0;
 let discountid;
 
 $(document).ready(function () {
@@ -15,7 +17,7 @@ $(document).ready(function () {
     $("#credit-card").hide();
     getCustomerData();
     displayOrderItems();
-    getCustomerPaymentmethod();
+    getCustomerPaymentmethod("#payment-method");
     getVoucherInformation();
 
     $("#dicountcode_btn").on("click", function (event){
@@ -35,6 +37,14 @@ $(document).ready(function () {
     });
 
     // Wird ausgelöst, wenn sich die Paymentmethode (Auswahlliste aus der Datenbank) auf der HP ändert.
+    $("#residualpayment-method").on("change", function (){
+        let selectedValue =$(this).val();
+        console.log(selectedValue);
+        displayPaymentInformation(selectedValue, "#additional-paymentmethod");
+        additionalpayment = selectedValue;
+        control = true;
+    })
+
 
     $("#payment-method").on("change", function (){
         $("#voucher").hide();
@@ -43,11 +53,10 @@ $(document).ready(function () {
         let selectedValue =$(this).val();
         if (selectedValue === "Gutschein"){
             displayVoucherInformation();
-        } else if (selectedValue === "Kreditkarte"){
-            displayCreditcardInformation();
+        } else {
+            displayPaymentInformation(selectedValue, "#credit-card");
+            payment = selectedValue;
         }
-        //weitere Anpassungen für unterschiedliche Methoden erweiterbar
-
     })
 
     function checkDiscountCode(discountcode){
@@ -75,7 +84,6 @@ $(document).ready(function () {
     }
 
     function displayDiscountInformation(discountinformation){
-        console.log(discountinformation);
         $('#discount-card').hide();
         let percentage = parseFloat(discountinformation[0]['discount'])/100
         console.log(percentage);
@@ -102,26 +110,26 @@ $(document).ready(function () {
         }
     }
 
-    //Anzeige der Kreditkarteninformation
-    function displayCreditcardInformation(){
-        payment= "Kreditkarte"
-        $("#credit-card").empty();
-        let creditcardinformation = `
+    //Anzeige der Bezahlinformation
+    function displayPaymentInformation(paymentmethode, toAppend){
+        let information = customerpaymentmethod.find(method => method.type === paymentmethode);
+        $(toAppend).empty();
+        let paymentinformation = `
             <div class="card-header">
-                    <h4>Kreditkarteninformation</h4>
+                    <h4>Zahlungsinformation</h4>
                 </div>
                 <div class="card-body">
                     <div class="row align-items-center w-100 mb-1">
                         <div class="col d-flex align-items-center position-relative">
-                            <span class="text-truncate"><h6>Kreditkartennummer: </h6></span>
+                            <span class="text-truncate"><h6>Nummer/Benutzername: </h6></span>
                         </div>
                         <div class="col-auto d-flex align-items-center">
-                          <span class="badge bg-primary rounded-pill">${creditinformation}</span>
+                          <span class="badge bg-primary rounded-pill">${information['information']}</span>
                         </div>
                     </div>
                 </div>
         `
-        $("#credit-card").append(creditcardinformation).show();
+        $(toAppend).append(paymentinformation).show();
     }
 
     //Anzeige der Gutscheininformation, inklusive Restbetrag.
@@ -133,6 +141,7 @@ $(document).ready(function () {
         if (new_residual_value < 0){
             let topay = new_residual_value * (-1);
             new_residual_value = 0;
+            additionalPaymethode = true;
             displayResidualPayment(topay);
         }
         $("#voucher").empty();
@@ -165,27 +174,25 @@ $(document).ready(function () {
     //Anzeige der Restzahlung und alternativen Paymentmethode an.
 
     function displayResidualPayment(topay){
-        payment += " + " + customerpaymentmethod[0]['pay_type'];
+        $("#residual_payment").show();
+        $("#payment").empty();
         let residualpayment = `
-            <div class="card-header">
-                    <h4>Restzahlung</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row align-items-center w-100 mb-1">
-                        <div class="col d-flex align-items-center position-relative">
-                            <span class="text-truncate"><h6>${customerpaymentmethod[0]['pay_type']}</h6></span>
-                        </div>
-                        <div class="col-auto d-flex align-items-center">
-                          <span class="badge bg-danger rounded-pill">€ ${topay.toFixed(2)}</span>
-                        </div>
+            <div class="card-body">
+                <div class="row align-items-center w-100 mb-1">
+                    <div class="col d-flex align-items-center position-relative">
+                        <span class="text-truncate"><h6>Restbetrag</h6></span>
+                    </div>
+                    <div class="col-auto d-flex align-items-center">
+                      <span class="badge bg-danger rounded-pill">€ ${topay.toFixed(2)}</span>
                     </div>
                 </div>
+            </div>
         `
-        $("#residual_payment").append(residualpayment).show();
+        $("#payment").append(residualpayment).show();
+        getCustomerPaymentmethod("#residualpayment-method");
     }
 
     function displayOrderItems(){
-        //const storedCart = localStorage.getItem('cart');
         const orderItems = storedCart ? JSON.parse(storedCart) : [];
         const orderItemsList = $("#productlist");
 
@@ -233,8 +240,15 @@ $(document).ready(function () {
     //Bestellung wird in die Datenbank geschrieben.
 
     function saveOrder(usedVoucher) {
+        if(additionalpayment != ""){
+            payment += " + "+additionalpayment;
+        }
         if (payment === ""){
             alert("Bitte Zahlungsmethode wählen!");
+            return false;
+        }
+        if (!control && additionalPaymethode){
+            alert("Bitte Zahlungsmethode für die Restzahlung wählen!");
             return false;
         }
         let payload ={};
@@ -279,7 +293,7 @@ $(document).ready(function () {
 
     //Zahlungsmethode des Kunden aus der Datenbank auslesen
 
-    function getCustomerPaymentmethod() {
+    function getCustomerPaymentmethod(toAppend) {
         $.ajax({
             url: apiUrl,
             type: 'GET',
@@ -287,12 +301,18 @@ $(document).ready(function () {
             contentType: 'application/json',
             xhrFields: { withCredentials: true },
             success: function (response) {
-                customerpaymentmethod = response;
-                creditinformation = response[0]['pay_info'];
-                var option = $("<option/>", {
-                    "class": response[0]['pay_type'],
-                }).text(response[0]['pay_type'])
-                $("#payment-method").append(option);
+                response.forEach((methode, index) => {
+                    console.log(methode['pay_type']);
+                    customerpaymentmethod.push({
+                        type: methode['pay_type'],
+                        information: methode['pay_info']
+                    });
+                    let option = $("<option/>", {
+                        "class": methode['pay_type'],
+                    }).text(methode['pay_type']);
+                    $(toAppend).append(option);
+                });
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Login status request failed:', textStatus, errorThrown);

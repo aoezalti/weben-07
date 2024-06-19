@@ -43,7 +43,21 @@
                     <div class="card-body" id="total"></div>
                 </div>
                 <div class="card mb-4" id="voucher"></div>
-                <div class="card mb-4" id="residual_payment"></div>
+                <div class="card mb-4" id="residual_payment">
+                    <div class="card-header">
+                        <h4>Restzahlung</h4>
+                    </div>
+                    <form>
+                        <div class="card-body" id="residualpaymentmethode">
+                            <label for="payment-method">Wählen Sie eine weitere Zahlungsart</label>
+                            <select class="form-control" id="residualpayment-method" name="residualpayment-method" required>
+                                <option selected disabled>Ihre Zahlungsarten</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="additional-paymentmethod"></div>
+                        <div class="form-group" id="payment"></div>
+                    </form>
+                </div>
                 <div class="card mb-4" id="credit-card"></div>
                 <div class="card mb-4">
                     <div class="card-header">
