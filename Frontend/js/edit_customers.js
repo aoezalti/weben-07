@@ -1,6 +1,6 @@
 //editing customers happens here
 
-$(document).ready(function (){
+$(document).ready(function () {
     var apiUrl = 'http://localhost/weben-07/Backend/logic/requestHandler.php?type=customers';
 
     function getCustomers(apiUrl) {
@@ -24,18 +24,18 @@ $(document).ready(function (){
             }
         });
     }
+
     getCustomers(apiUrl);
 });
 
-function createCustomerTable(customers){
-
-    var table = `<table class="table">
-                    <thead>
+function createCustomerTable(customers) {
+    var table = `<div class="table-responsive"><table class="table table-striped table-hover table-bordered">
+                    <thead class="thead-dark">
                         <tr>
-                            <th>Customer ID</th>
-                            <th>Customer Name</th>
-                            <th>is Active</th>
-                            <th>View Orders</th>
+                            <th scope="col">Customer ID</th>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Is Active</th>
+                            <th scope="col">View Orders</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -44,54 +44,50 @@ function createCustomerTable(customers){
         table += `<tr>
 <td>${customer.customerid}</td>
 <td>${customer.customerName}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="toggleActive(${customer.customerid}, 'isActive', this)">${customer.isActive}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="getOrders(${customer.customerid}, 'category', this)">View Orders</td>
+<td class="text-center"><div class="form-check form-switch">
+<input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault-${customer.customerid}" ${customer.isActive ? 'checked' : ''} onclick="toggleActive(${customer.customerid}, 'isActive', this)">
+<label class="form-check-label" for="flexSwitchCheckDefault-${customer.customerid}"></label>
+</div></td>
+<td style="cursor: pointer; text-decoration: underline; color: #007bff;" onclick="getOrders(${customer.customerid}, 'category', this)">View Orders</td>
                   </tr>`;
     });
 
-    table += `</tbody></table>`;
+    table += `</tbody></table></div>`;
     $('.container.mt-5').append(table);
 }
 
-function toggleActive(customer,isActive, field){
-    var currentValue = $(field).text()
-    console.log(currentValue);
-    if(currentValue==="1"){
-        console.log("IM here");
-        var newValue = 0;
-    }else{
-        var newValue = 1;
-    }
+function toggleActive(customer, isActive, field) {
+    var newValue = $(field).is(':checked') ? 1 : 0;
 
     var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
-        changes = {
-            'field' : field,
-            'value' : newValue,
-            'userid': customer,
-        }
+    changes = {
+        'field': field,
+        'value': newValue,
+        'userid': customer,
+    }
 
-        var payload ={
-            type:'toggleActive',
-            data: changes
-        }
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: apiURL,  // Adjust path as necessary
-            data: JSON.stringify(payload),
-            success: function(response) {
-                if (response.success) {
-                    // after successful update refresh page to show results
-                    location.reload();
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Failed to fetch user data:', textStatus, errorThrown);
+    var payload = {
+        type: 'toggleActive',
+        data: changes
+    }
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: apiURL,  // Adjust path as necessary
+        data: JSON.stringify(payload),
+        success: function (response) {
+            if (response.success) {
+                // after successful update refresh page to show results
+                location.reload();
             }
-        });
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Failed to fetch user data:', textStatus, errorThrown);
+        }
+    });
 }
 
-function getOrders(customerId){
+function getOrders(customerId) {
     var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
     var payload = {
         type: 'getOrders',
@@ -105,13 +101,13 @@ function getOrders(customerId){
         dataType: 'json',
         url: apiURL,
         data: JSON.stringify(payload),
-        success: function(response) {
-            if (response[0]!==null) {
+        success: function (response) {
+            if (response[0] !== null) {
 
                 displayOrders(response);
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             console.error('Failed to fetch orders:', textStatus, errorThrown);
         }
     });
@@ -145,20 +141,20 @@ function displayOrders(orders) {
 
     $('#modalBody').html(ordersTable)
     $('#ordersModal').show();  // Assuming you have a modal or a div with this ID
-    $('.close').click(function() {
+    $('.close').click(function () {
         $('#ordersModal').hide();
     });
 }
 
-function editOrder(order_id, productname,productCount) {
+function editOrder(order_id, productname, productCount) {
     var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
-    var newproductCount = parseInt(productCount)-1;
+    var newproductCount = parseInt(productCount) - 1;
 
-    if(newproductCount===0){
+    if (newproductCount === 0) {
         var type = 'deleteProductFromOrder';
-    }else if(newproductCount>=0){
+    } else if (newproductCount >= 0) {
         var type = 'updateOrder';
-    } else{
+    } else {
         var type = 'deleteOrder';
     }
 
@@ -176,12 +172,12 @@ function editOrder(order_id, productname,productCount) {
         dataType: 'json',
         url: apiURL,
         data: JSON.stringify(payload),
-        success: function(response) {
+        success: function (response) {
             if (response === true) {
                 location.reload();
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, errorThrown) {
             console.error('Failed to fetch order details:', textStatus, errorThrown);
         }
     });
@@ -189,7 +185,7 @@ function editOrder(order_id, productname,productCount) {
 
 
 // Close modal if clicked outside
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == document.getElementById('ordersModal')) {
         $('#ordersModal').hide();
     }
