@@ -98,7 +98,7 @@ class UserDAO
                     return ["success" => true, "data" => $userRecord, "paymentData" => $paymentRecords, "orderData" => $orderRecords];
                 } else {
 
-                    return ["success" => false, "message" => "Incorrect password"];
+                    return ["success" => false, "message" => "Login not possible! User is not active or password is incorrect!"];
                 }
             } else {
 

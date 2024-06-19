@@ -52,8 +52,6 @@ class RequestHandler
                     $response = $this->productDAO->getProducts($search);
                     break;
                 case 'customers':
-                    //include_once './userDAO.php';
-                    //$this->userDAO = new UserDAO();
                     $response = $this->userDAO->getCustomers($search);
                     break;
                 case 'productsByCategory':
@@ -63,13 +61,9 @@ class RequestHandler
                     $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
                     break;
                 case 'orders':
-                   // include_once './userDAO.php';
-                   // $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
                     break;
                 case 'customerData':
-                  //  include_once './userDAO.php';
-                  //  $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getCustomerData();
                     break;
                 case 'customerPaymentMethod':
@@ -132,20 +126,14 @@ class RequestHandler
 
                     break;
                 case 'addPaymentInfo':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->addPaymentInfo($data["data"]);
                     $_SESSION["paymentData"] = $response["paymentData"];
                     break;
                 case 'deletePaymentInfo':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->deletePaymentInfo($data["data"]);
                     $_SESSION["paymentData"] = $response["paymentData"];
                     break;
                 case 'toggleActive':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->toggleActive($userChanges);
                     break;
                 case 'deleteProduct':
@@ -156,8 +144,6 @@ class RequestHandler
                     $response = $this->productDAO->changeProduct($productData);
                     break;
                 case 'register':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->registerUser($userData);
                         sleep(1);
@@ -175,8 +161,6 @@ class RequestHandler
                     }
                     break;
                 case 'login':
-                  //  include_once './userDAO.php';
-                   // $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->checkUser($userData);
                         if (isset($response["success"]) && $response["success"] === true) {
@@ -214,8 +198,6 @@ class RequestHandler
                     }
                     break;
                 case 'changeUser':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     if(!empty($userChanges)){
                         $response = $this->userDAO->changeUser($userChanges);
                         $_SESSION["userRecord"] = $response["data"];
