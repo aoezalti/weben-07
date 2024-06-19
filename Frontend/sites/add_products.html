@@ -14,7 +14,47 @@
 <div id="navbar-placeholder"></div>
 
 <div class="container mt-5">
-
+    <h2>Produkt hinzufügen</h2>
+    <form id="addProductForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="productName" class="form-label">Produktname</label>
+            <input type="text" class="form-control" id="productName" name="productName" required>
+        </div>
+        <div class="mb-3">
+            <label for="productPrice" class="form-label">Preis</label>
+            <input type="number" step="0.01" class="form-control" id="productPrice" name="productPrice" required>
+        </div>
+        <div class="mb-3">
+            <label for="productCategory" class="form-label">Kategorie</label>
+            <input type="text" class="form-control" id="productCategory" name="productCategory" required>
+        </div>
+        <div class="mb-3">
+            <label for="productSpecialPrice" class="form-label">Sonderpreis</label>
+            <input type="number" step="0.01" class="form-control" id="productSpecialPrice" name="productSpecialPrice">
+        </div>
+        <div class="mb-3">
+            <label for="productInSale" class="form-label">Im Angebot</label>
+            <input type="checkbox" id="productInSale" name="productInSale" value="1">
+        </div>
+        <div class="mb-3">
+            <label for="productAltImg" class="form-label">Alt-Text für Bild</label>
+            <input type="text" class="form-control" id="productAltImg" name="productAltImg" required>
+        </div>
+        <div class="mb-3">
+            <label for="productImage" class="form-label">Produktbild</label>
+            <input type="file" class="form-control" id="productImage" name="productImage" required>
+        </div>
+        <div class="mb-3">
+            <label for="currentReview" class="form-label">Aktuelle Bewertung</label>
+            <input type="number" step="0.5" min="1" max="5" class="form-control" id="currentReview" name="currentReview" required>
+        </div>
+        <div class="mb-3">
+            <label for="allReviews" class="form-label">Alle Bewertungen</label>
+            <input type="number" class="form-control" id="allReviews" name="allReviews" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Produkt hinzufügen</button>
+    </form>
+</div>
 
 </div>
 <br>
@@ -29,6 +69,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="../js/script.js" defer></script>
 <script src="../js/admin.js" defer></script>
-
+<script src="../js/add_products.js" defer></script>
+<script src="../js/cart.js" defer></script>
 </body>
 </html>

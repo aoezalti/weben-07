@@ -97,4 +97,40 @@ class ProductDAO
         }
     }
 
+    public function insertProduct($productData)
+    {
+        try {
+            // Sanitize inputs
+            $productName = htmlspecialchars(strip_tags($productData['productName']));
+            $productPrice = htmlspecialchars(strip_tags($productData['productPrice']));
+            $productCategory = htmlspecialchars(strip_tags($productData['productCategory']));
+            $productSpecialPrice = htmlspecialchars(strip_tags($productData['productSpecialPrice']));
+            $productInSale = htmlspecialchars(strip_tags($productData['productInSale']));
+            $productAltImg = htmlspecialchars(strip_tags($productData['productAltImg']));
+            $productImage = htmlspecialchars(strip_tags($productData['productImage']));
+            $currentReview = htmlspecialchars(strip_tags($productData['currentReview']));
+            $allReviews = htmlspecialchars(strip_tags($productData['allReviews']));
+
+            // Insert product data into the database
+            $sql = "INSERT INTO products (productname, regularprice, specialprice, insale, altimg, imgpath, category, currentreview, allreviews) VALUES (:productname, :regularprice, :specialprice, :insale, :altimg, :imgpath, :category, :currentreview, :allreviews)";
+            $stmt = $this->db->conn->prepare($sql);
+            $stmt->bindParam(':productname', $productName);
+            $stmt->bindParam(':regularprice', $productPrice);
+            $stmt->bindParam(':specialprice', $productSpecialPrice);
+            $stmt->bindParam(':insale', $productInSale);
+            $stmt->bindParam(':altimg', $productAltImg);
+            $stmt->bindParam(':imgpath', $productImage);
+            $stmt->bindParam(':category', $productCategory);
+            $stmt->bindParam(':currentreview', $currentReview);
+            $stmt->bindParam(':allreviews', $allReviews);
+
+            if ($stmt->execute()) {
+                return ["success" => true, "message" => "Produkt erfolgreich hinzugefügt!"];
+            } else {
+                return ["success" => false, "message" => "Fehler beim Hinzufügen des Produkts."];
+            }
+        } catch (PDOException $e) {
+            return ["success" => false, "message" => "Datenbankfehler: " . $e->getMessage()];
+        }
+    }
 }

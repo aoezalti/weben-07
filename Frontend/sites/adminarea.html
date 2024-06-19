@@ -13,20 +13,47 @@
 <!-- Navbar/Header -->
 <div id="navbar-placeholder"></div>
 
+<br><br><br>
 <div class="container mt-5">
-    <!-- Edit Products Button -->
-    <a href="edit_products.html" class="btn btn-primary mr-2">Edit Products</a>
+    <div class="row">
+        <!-- Edit Products Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-pencil-square mb-3" style="font-size: 5rem; color: #006400;"></i>
+                    <h5 class="card-title">Produkte Bearbeiten</h5>
+                    <p class="card-text">Bearbeiten und aktualisieren Sie Ihre Produktlisten.</p>
+                    <a href="edit_products.html" class="btn" style="background-color: #006400; color: white;">Produkte Bearbeiten</a>
+                </div>
+            </div>
+        </div>
 
-    <!-- Add Products Button -->
-    <a href="add_products.html" class="btn btn-success mr-2">Add Products</a>
+        <!-- Add Products Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-square-fill mb-3" style="font-size: 5rem; color: #228B22;"></i>
+                    <h5 class="card-title">Produkte Hinzufügen</h5>
+                    <p class="card-text">Neue Produkte zu Ihrem Shop hinzufügen.</p>
+                    <a href="add_products.html" class="btn" style="background-color: #228B22; color: white;">Produkte Hinzufügen</a>
+                </div>
+            </div>
+        </div>
 
-    <!-- Edit Customers Button -->
-    <a href="edit_customers.html" class="btn btn-info">Edit Customers</a>
-
+        <!-- Edit Customers Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-fill mb-3" style="font-size: 5rem; color: #32CD32;"></i>
+                    <h5 class="card-title">Kunden Bearbeiten</h5>
+                    <p class="card-text">Verwalten Sie Ihre Kundeninformationen.</p>
+                    <a href="edit_customers.html" class="btn" style="background-color: #32CD32; color: white;">Kunden Bearbeiten</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<br>
-<br><br>
-
+<br><br><br>
 
 <!-- Footer -->
 <div id="footer-placeholder"></div>
@@ -36,6 +63,6 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="../js/script.js" defer></script>
 <script src="../js/admin.js" defer></script>
-
+<script src="../js/cart.js" defer></script>
 </body>
 </html>
