@@ -52,8 +52,6 @@ class RequestHandler
                     $response = $this->productDAO->getProducts($search);
                     break;
                 case 'customers':
-                    //include_once './userDAO.php';
-                    //$this->userDAO = new UserDAO();
                     $response = $this->userDAO->getCustomers($search);
                     break;
                 case 'productsByCategory':
@@ -63,13 +61,9 @@ class RequestHandler
                     $response = $this->productDAO->getProductsById(isset($_GET['id']) ? $_GET['id'] : '');
                     break;
                 case 'orders':
-                   // include_once './userDAO.php';
-                   // $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getOrdersByID(isset($_GET['orderID']) ? $_GET['orderID'] : '');
                     break;
                 case 'customerData':
-                  //  include_once './userDAO.php';
-                  //  $this->userDAO = new UserDAO();
                     $response = $this->userDAO->getCustomerData();
                     break;
                 case 'customerPaymentMethod':
@@ -99,17 +93,32 @@ class RequestHandler
     {
         try {
             $data = json_decode(file_get_contents('php://input'), true);
+
+            //sanitization
+            $data = sanitize_input($data);
+
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
             $userChanges = isset($data['data']) ? $data['data'] : [];
             $productData = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
-            //sanitization
-            foreach ($userData as $key => $value) {
-                $userData[$key] = htmlspecialchars(strip_tags($value));
-            }
+
             switch ($type) {
+                case 'deleteOrder':
+                    $response = $this ->userDAO->deleteOrder($data["data"]);
+                    break;
+
+                case 'deleteProductFromOrder':
+                    $response = $this ->userDAO->deleteProductFromOrder($data["data"]);
+                    break;
+                case 'updateOrder':
+                    $response = $this ->userDAO->updateOrder($data["data"]);
+                    break;
+                case 'getOrders':
+                    $response = $this ->userDAO->getAllOrdersByCustomer($data["data"]);
+                    break;
+
                 case 'changePassword':
                 //  include_once './userDAO.php';
                 //    $this->userDAO = new UserDAO();
@@ -117,20 +126,14 @@ class RequestHandler
 
                     break;
                 case 'addPaymentInfo':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->addPaymentInfo($data["data"]);
                     $_SESSION["paymentData"] = $response["paymentData"];
                     break;
                 case 'deletePaymentInfo':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->deletePaymentInfo($data["data"]);
                     $_SESSION["paymentData"] = $response["paymentData"];
                     break;
                 case 'toggleActive':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->toggleActive($userChanges);
                     break;
                 case 'deleteProduct':
@@ -141,8 +144,6 @@ class RequestHandler
                     $response = $this->productDAO->changeProduct($productData);
                     break;
                 case 'register':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->registerUser($userData);
                         sleep(1);
@@ -160,8 +161,6 @@ class RequestHandler
                     }
                     break;
                 case 'login':
-                  //  include_once './userDAO.php';
-                   // $this->userDAO = new UserDAO();
                     if (!empty($userData)) {
                         $response = $this->userDAO->checkUser($userData);
                         if (isset($response["success"]) && $response["success"] === true) {
@@ -199,8 +198,6 @@ class RequestHandler
                     }
                     break;
                 case 'changeUser':
-                //    include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     if(!empty($userChanges)){
                         $response = $this->userDAO->changeUser($userChanges);
                         $_SESSION["userRecord"] = $response["data"];
@@ -237,6 +234,18 @@ class RequestHandler
             echo json_encode($data);
         }
     }
+}
+
+// function that accepts input, if it is an array -> self call, if value -> sanitize
+function sanitize_input($input) {
+    if (is_array($input)) {
+        foreach ($input as $key => $value) {
+            $input[$key] = sanitize_input($value);
+        }
+    } else {
+        $input = htmlspecialchars(strip_tags($input));
+    }
+    return $input;
 }
 
 $api = new RequestHandler();

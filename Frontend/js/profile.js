@@ -32,8 +32,6 @@ $(document).ready(function() {
                                 <th>PLZ</th>
                                 <th>City</th>
                                 <th>Email</th>
-                                <th>Username</th>
-                                
                                 <th>Address</th>
                             </tr>
                         </thead>
@@ -45,7 +43,6 @@ $(document).ready(function() {
                             <td onclick="editCell('plz', this,${userData.userid})"><a href="#">${userData.plz}</a></td>
                             <td onclick="editCell('city', this,${userData.userid})"><a href="#">${userData.city}</a></td>
                             <td onclick="editCell('mail', this,${userData.userid})"><a href="#">${userData.mail}</a></td>
-                            <td onclick="editCell('username', this,${userData.userid})"><a href="#">${userData.username}</a></td>
                             <td onclick="editCell('address', this,${userData.userid})"><a href="#">${userData.address}</a></td>
                             </tr>
                         </tbody>
@@ -65,9 +62,14 @@ $(document).ready(function() {
                     <tbody>`;
 
         paymentData.forEach(function(payment) {
+            // String half
+            var maskLength = Math.floor(payment.paymentInfo.length / 2);
+            // replace half of string with *
+            var maskedInfo = payment.paymentInfo.substr(0, payment.paymentInfo.length - maskLength) + '*'.repeat(maskLength);
+
             table += `<tr>
                     <td>${payment.paymentType}</td>
-                    <td>${payment.paymentInfo}</td>
+                    <td>${maskedInfo}</td>
                     <td onclick="removePaymentInfo(${payment.p_id},${payment.userid})"><a href="#">Remove</a></td>
                   </tr>`;
         });
@@ -77,6 +79,7 @@ $(document).ready(function() {
 
         $('.container.mt-5').append(table);
     }
+
 
     function createOrderTable(orderData) {
         var table = `<table class="table">
@@ -104,42 +107,63 @@ $(document).ready(function() {
     }
 });
 
-function editCell(fieldname, cell, userid){
+function editCell(fieldname, cell, userid) {
     var apiURL = 'http://localhost/weben-07/Backend/logic/requestHandler.php';
     var currentValue = $(cell).text();
     var newValue = prompt(`neuen Wert für ${fieldname} eingeben:`, currentValue);
-    if(newValue!==null){
-        var password = prompt(`Passwort zur Bestätigung eingeben: `);
-        if(password!==null){
-            changes = {
-                'field' : fieldname,
-                'newValue':newValue,
-                'password':password,
-                'userid': userid
-            }
+    if (newValue !== null) {
+        // Show modal for password input
+        $('#passwordModal').show();
 
-            var payload = {
-                type: 'changeUser',
-                data: changes
-            }
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: apiURL,  // Adjust path as necessary
-                data: JSON.stringify(payload),
-                success: function(response) {
-                    if (response.success) {
-                        // after successful update refresh page to show results
-                        location.reload();
+        // Handle form submission
+        $('#passwordForm').on('submit', function(e) {
+            e.preventDefault();
+            var password = $('#passwordInput').val();
+            $('#passwordModal').hide();
+
+            if (password) {
+                var changes = {
+                    'field': fieldname,
+                    'newValue': newValue,
+                    'password': password,
+                    'userid': userid
+                };
+
+                var payload = {
+                    type: 'changeUser',
+                    data: changes
+                };
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: apiURL,
+                    data: JSON.stringify(payload),
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();  // Refresh page on success
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Failed to update user data:', textStatus, errorThrown);
                     }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Failed to fetch user data:', textStatus, errorThrown);
-                }
-            });
-        }
+                });
+            }
+        });
+
+        // Close modal on clicking close button
+        $('.close').click(function() {
+            $('#passwordModal').hide();
+        });
     }
 }
+
+// Close modal if clicked outside
+window.onclick = function(event) {
+    if (event.target == document.getElementById('passwordModal')) {
+        $('#passwordModal').hide();
+    }
+};
+
 
 
 function removePaymentInfo(paymentInfo, userid) {
@@ -181,7 +205,11 @@ document.getElementById('loadFormButton').addEventListener('click', function() {
             <form id="paymentForm">
                 <div class="mb-3">
                     <label for="zahlungstyp" class="form-label">Zahlungstyp</label>
-                    <input type="text" class="form-control" id="zahlungstyp" required placeholder="Z.B. Kreditkarte, Gutschein">
+                    <select class="form-select" id="zahlungstyp" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="Kreditkarte">Kreditkarte</option>
+                        <option value="PayPal">PayPal</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="zahlungsinformationen" class="form-label">Zahlungsinformationen</label>

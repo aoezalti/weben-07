@@ -90,14 +90,15 @@ class UserDAO
             $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($userRecord) {
-                if (password_verify($password, $userRecord['password'])) {
+                // check password and active status
+                if (password_verify($password, $userRecord['password']) &&$userRecord['isActive'] === 1) {
 
                     $paymentRecords = $this->getPaymentInformation($userRecord['userid']);
                     $orderRecords = $this->getOrderRecords($userRecord['userid']);
                     return ["success" => true, "data" => $userRecord, "paymentData" => $paymentRecords, "orderData" => $orderRecords];
                 } else {
 
-                    return ["success" => false, "message" => "Incorrect password"];
+                    return ["success" => false, "message" => "Login not possible! User is not active or password is incorrect!"];
                 }
             } else {
 
@@ -380,7 +381,87 @@ WHERE orders.order_id = :orderid
         }
     }
 
+    public function getAllOrdersByCustomer($data){
+        try {
+            $sql = "SELECT
+    orders.order_id,
+    orders.orderdate,
+    orderitems.quantity AS productCount,
+    orders.total,
+    products.productname,
+    orderitems.price * orderitems.quantity AS totalPrice,
+    users.salutation,
+    users.firstname,
+    users.lastname,
+    users.plz,
+    users.city,
+    users.address
+FROM orders
+LEFT JOIN orderitems ON orderitems.order_id = orders.order_id
+LEFT JOIN products ON products.productid = orderitems.product_id
+LEFT JOIN users ON orders.user_id = users.userid
+WHERE orders.user_id = :userid
+                    
+                    ";
+            $sqlstmt = $this->db->prepare($sql);
+            $sqlstmt->bindParam(':userid', $data["userid"], PDO::PARAM_INT);
+            $sqlstmt->execute();
+            $order = $sqlstmt->fetchall(PDO::FETCH_ASSOC);
+            return $order;
+        } catch (PDOException $e) {
 
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function deleteProductFromOrder($data)
+    {
+        try {
+            $sql = "DELETE orderitems
+                    FROM orderitems
+                    JOIN products ON products.productid = orderitems.product_id
+                    WHERE orderitems.order_id = :orderid AND products.productname = :productname;";
+
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':orderid', $data["order_id"], PDO::PARAM_INT);
+            $stmt->bindParam(':productname', $data["productname"], PDO::PARAM_INT);
+           return $stmt->execute();
+        }catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function updateOrder($data)
+    {
+        try {
+            $sql = "UPDATE orderitems 
+                    JOIN products ON products.productid = orderitems.product_id
+                    SET quantity = :quantity
+                    WHERE order_id = :orderid AND productname = :productname;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':quantity', $data["productCount"], PDO::PARAM_INT);
+            $stmt->bindParam(':orderid', $data["order_id"], PDO::PARAM_INT);
+            $stmt->bindParam(':productname', $data["productname"], PDO::PARAM_INT);
+            return $stmt->execute();
+        }catch (
+            PDOException $e
+        ){
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
+
+    public function deleteOrder($data)
+    {
+        try {
+            $sql = "DELETE from orders where order_id = :orderid;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':orderid', $data["order_id"], PDO::PARAM_INT);
+            return $stmt->execute();
+        }catch (PDOException $e) {
+            return ["error" => "Database error: " . $e->getMessage()];
+        }
+    }
 
 
 }
