@@ -110,6 +110,7 @@ class ProductDAO
             $productImage = htmlspecialchars(strip_tags($productData['productImage']));
             $currentReview = htmlspecialchars(strip_tags($productData['currentReview']));
             $allReviews = htmlspecialchars(strip_tags($productData['allReviews']));
+            $productImage = str_replace('../', '../../Backend/', $productImage);
 
             // Insert product data into the database
             $sql = "INSERT INTO products (productname, regularprice, specialprice, insale, altimg, imgpath, category, currentreview, allreviews) VALUES (:productname, :regularprice, :specialprice, :insale, :altimg, :imgpath, :category, :currentreview, :allreviews)";
