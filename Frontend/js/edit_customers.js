@@ -32,10 +32,10 @@ function createCustomerTable(customers){
     var table = `<table class="table">
                     <thead>
                         <tr>
-                            <th>Customer ID</th>
-                            <th>Customer Name</th>
-                            <th>is Active</th>
-                            <th>View Orders</th>
+                            <th>Kunden ID</th>
+                            <th>Kundenname</th>
+                            <th>Aktiv-Status</th>
+                            <th>Bestellungen</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -45,7 +45,7 @@ function createCustomerTable(customers){
 <td>${customer.customerid}</td>
 <td>${customer.customerName}</td>
 <td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="toggleActive(${customer.customerid}, 'isActive', this)">${customer.isActive}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="getOrders(${customer.customerid}, 'category', this)">View Orders</td>
+<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="getOrders(${customer.customerid}, 'category', this)">Bestellungen Anzeigen</td>
                   </tr>`;
     });
 
@@ -121,10 +121,10 @@ function displayOrders(orders) {
     var ordersTable = `<table class="table">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Delete</th>
+                                <th>Bestellungs ID</th>
+                                <th>Produkt</th>
+                                <th>Stückzahö</th>
+                                <th>Entfernen</th>
                                 
                             </tr>
                         </thead>
@@ -135,7 +135,7 @@ function displayOrders(orders) {
             <td>${order.order_id}</td>
             <td>${order.productname}</td>
             <td>${order.productCount}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="editOrder(${order.order_id}, '${order.productname}', ${order.productCount})">Delete</td>
+<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="editOrder(${order.order_id}, '${order.productname}', ${order.productCount})">Entfernen</td>
         </tr>`;
     });
 
