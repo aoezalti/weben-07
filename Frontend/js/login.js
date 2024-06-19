@@ -22,7 +22,7 @@ $(document).ready(function () {
             data: JSON.stringify(payload),
             success: function (response) {
                 if (response.success) {
-                    console.log("Admin:" + response.data['isAdmin']);
+                    //console.log("Admin:" + response.data['isAdmin']);
                     getLoginStatus();
                     //if user is admin goto admin page
                     if(response.data['isAdmin'] === 1){
@@ -31,12 +31,13 @@ $(document).ready(function () {
                         window.location.href = "./profile.html";
                     }
                 } else {
+                    alert("oh oh kein Login möglich!");
                     console.log("oh oh kein login möglich", response);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('ajax request failed:', textStatus, errorThrown);
-                console.log(jqXHR.responseText)
+                //console.log(jqXHR.responseText)
             }
         })
     }

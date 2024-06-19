@@ -101,8 +101,8 @@ class RequestHandler
             $data = json_decode(file_get_contents('php://input'), true);
 
             //sanitization
+            $data2 = $data;
             $data = sanitize_input($data);
-
             $type = isset($data['type']) ? $data['type'] : '';
             $userData = isset($data['userData']) ? $data['userData'] : [];
             $userChanges = isset($data['data']) ? $data['data'] : [];
@@ -158,6 +158,7 @@ class RequestHandler
                                 $_SESSION["paymentData"] = $response["paymentData"];
                                 $_SESSION["orderData"] = $response["orderData"];
                                 $_SESSION["username"] = $userData['user'];
+                                $_SESSION["isAdmin"] = $response["data"]["isAdmin"];
                             }
                         }
                     }
@@ -183,7 +184,8 @@ class RequestHandler
                     $response = ["success" => "Logout successful!"];
                     break;
                 case 'orders':
-                    $response = $this->cartDAO->saveOrder($data);
+                    $response = $this->cartDAO->saveOrder($data2);
+                    $_SESSION["orderData"] = $this->userDAO->getOrderRecords($data);
                     break;
                 case 'loginStatus':
                     if(isset($_SESSION["username"])) {
@@ -253,6 +255,7 @@ function sanitize_input($input) {
     } else {
         $input = htmlspecialchars(strip_tags($input));
     }
+
     return $input;
 }
 

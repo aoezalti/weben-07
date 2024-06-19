@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Erstellungszeit: 18. Jun 2024 um 20:37
+-- Erstellungszeit: 19. Jun 2024 um 23:29
 -- Server-Version: 10.4.28-MariaDB
 -- PHP-Version: 8.2.4
 
@@ -48,15 +48,6 @@ CREATE TABLE `orderitems` (
                               `price` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Daten für Tabelle `orderitems`
---
-
-INSERT INTO `orderitems` (`orderitem_id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
-                                                                                             (1, 8, 4, 1, 4.99),
-                                                                                             (2, 8, 3, 1, 3.99),
-                                                                                             (3, 8, 2, 1, 3.99);
-
 -- --------------------------------------------------------
 
 --
@@ -71,13 +62,6 @@ CREATE TABLE `orders` (
                           `orderdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                           `discount_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Daten für Tabelle `orders`
---
-
-INSERT INTO `orders` (`order_id`, `user_id`, `total`, `paymentmethod`, `orderdate`, `discount_id`) VALUES
-    (8, 1, 12.97, 'Kreditkarte', '2024-06-17 19:21:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -99,7 +83,9 @@ CREATE TABLE `paymentinformation` (
 INSERT INTO `paymentinformation` (`p_id`, `userid`, `pay_type`, `pay_info`) VALUES
                                                                                 (35, 1, 'Kredikarte', 'asd3244r234'),
                                                                                 (36, 1, 'visa', '1'),
-                                                                                (37, 1, 'Kreditkarte', 'asd');
+                                                                                (37, 1, 'Kreditkarte', 'asd'),
+                                                                                (38, 142, 'Kreditkarte', '1111'),
+                                                                                (41, 142, 'Kreditkarte', '4778946132164');
 
 -- --------------------------------------------------------
 
@@ -158,8 +144,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userid`, `salutation`, `firstname`, `lastname`, `plz`, `city`, `mail`, `username`, `password`, `isAdmin`, `address`, `isActive`) VALUES
-                                                                                                                                                           (1, 'Divers', 'anders', '123', 1324, 'asd', 'a@a.com', 'asd', '$2y$10$RddRtQKgGUHYFbphne2f2OtoR49Qy22zc9VNYq8TsDUuotKlBpC0a', 0, '1223qw', 1),
-                                                                                                                                                           (142, 'Herr', 'asd', 'asd', 1234, 'asd', 'asdla@asd.com', 'asd2', '$2y$10$UfVhILuLMJ1Bs8hlpz.1M.ml1ez.xssaT/hBbzX9dFp.qQ16QW1d2', 0, 'asd', 1);
+                                                                                                                                                           (1, 'Divers', 'anders', '123', 1324, 'asd', 'a@a.com', 'admin', '$2y$10$RddRtQKgGUHYFbphne2f2OtoR49Qy22zc9VNYq8TsDUuotKlBpC0a', 1, '1223qw', 1),
+                                                                                                                                                           (142, 'Herr', 'test', 'testnn', 1234, 'Teststadt', 'test@test.com', 'testuser1', '$2y$10$UfVhILuLMJ1Bs8hlpz.1M.ml1ez.xssaT/hBbzX9dFp.qQ16QW1d2', 0, 'Testgasse 1', 1);
 
 -- --------------------------------------------------------
 
@@ -173,6 +159,13 @@ CREATE TABLE `vouchers` (
                             `voucher_value` float NOT NULL,
                             `residual_value` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Daten für Tabelle `vouchers`
+--
+
+INSERT INTO `vouchers` (`voucher_id`, `user_id`, `voucher_value`, `residual_value`) VALUES
+    (4, 1, 100, 100);
 
 --
 -- Indizes der exportierten Tabellen
@@ -191,7 +184,7 @@ ALTER TABLE `discounts`
 ALTER TABLE `orderitems`
     ADD PRIMARY KEY (`orderitem_id`),
     ADD KEY `order_id` (`order_id`),
-    ADD KEY `product_id` (`product_id`);
+    ADD KEY `orderitems_ibfk_2` (`product_id`);
 
 --
 -- Indizes für die Tabelle `orders`
@@ -242,19 +235,19 @@ ALTER TABLE `discounts`
 -- AUTO_INCREMENT für Tabelle `orderitems`
 --
 ALTER TABLE `orderitems`
-    MODIFY `orderitem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+    MODIFY `orderitem_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT für Tabelle `orders`
 --
 ALTER TABLE `orders`
-    MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+    MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT für Tabelle `paymentinformation`
 --
 ALTER TABLE `paymentinformation`
-    MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+    MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`
@@ -266,13 +259,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-    MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+    MODIFY `userid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
 
 --
 -- AUTO_INCREMENT für Tabelle `vouchers`
 --
 ALTER TABLE `vouchers`
-    MODIFY `voucher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+    MODIFY `voucher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints der exportierten Tabellen
@@ -283,7 +276,7 @@ ALTER TABLE `vouchers`
 --
 ALTER TABLE `orderitems`
     ADD CONSTRAINT `orderitems_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-    ADD CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`productid`);
+    ADD CONSTRAINT `orderitems_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`productid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `orders`

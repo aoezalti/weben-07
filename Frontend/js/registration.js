@@ -39,11 +39,13 @@ $(document).ready(function () {
                 if (response.success) {
                     window.location.href = "profile.html";
                 } else {
+                   // alert("oh oh keine Registrierung möglich!");
                     console.log("oh oh keine Registrierung möglich",response);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('ajax request failed:', textStatus, errorThrown);
+                alert("oh oh keine Registrierung möglich!");
+               //console.log('ajax request failed:', textStatus, errorThrown);
             }
         });
     }

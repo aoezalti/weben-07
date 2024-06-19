@@ -32,10 +32,10 @@ function createCustomerTable(customers) {
     var table = `<div class="table-responsive"><table class="table table-striped table-hover table-bordered">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">Customer ID</th>
-                            <th scope="col">Customer Name</th>
-                            <th scope="col">Is Active</th>
-                            <th scope="col">View Orders</th>
+                            <th scope="col">Kunden ID</th>
+                            <th scope="col">Kundenname</th>
+                            <th scope="col">Aktivstatus</th>
+                            <th scope="col">Bestellungen</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -48,7 +48,7 @@ function createCustomerTable(customers) {
 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault-${customer.customerid}" ${customer.isActive ? 'checked' : ''} onclick="toggleActive(${customer.customerid}, 'isActive', this)">
 <label class="form-check-label" for="flexSwitchCheckDefault-${customer.customerid}"></label>
 </div></td>
-<td style="cursor: pointer; text-decoration: underline; color: #007bff;" onclick="getOrders(${customer.customerid}, 'category', this)">View Orders</td>
+<td style="cursor: pointer; text-decoration: underline; color: #007bff;" onclick="getOrders(${customer.customerid}, 'category', this)">Anzeigen</td>
                   </tr>`;
     });
 
@@ -117,10 +117,10 @@ function displayOrders(orders) {
     var ordersTable = `<table class="table">
                         <thead>
                             <tr>
-                                <th>Order ID</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Delete</th>
+                                <th>Bestellungs ID </th>
+                                <th>Produkt</th>
+                                <th>Anzahl</th>
+                                <th>Entfernen</th>
                                 
                             </tr>
                         </thead>
@@ -131,7 +131,7 @@ function displayOrders(orders) {
             <td>${order.order_id}</td>
             <td>${order.productname}</td>
             <td>${order.productCount}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="editOrder(${order.order_id}, '${order.productname}', ${order.productCount})">Delete</td>
+<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="editOrder(${order.order_id}, '${order.productname}', ${order.productCount})">Entfernen</td>
         </tr>`;
     });
 

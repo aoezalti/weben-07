@@ -69,7 +69,7 @@ function createProductTable(products) {
 <td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="updateField(${product.productid}, 'currentreview', this)">${product.currentreview}</td>
 <td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="updateField(${product.productid}, 'altimg', this)">${product.altimg}</td>
 <td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="updateField(${product.productid}, 'specialprice', this)">${product.specialprice}</td>
-<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="deleteItem(${product.productid})">DELETE</td>
+<td style="cursor: pointer; text-decoration: underline; color: #0a1621;" onclick="deleteItem(${product.productid})">Entfernen</td>
                   </tr>`;
     });
 

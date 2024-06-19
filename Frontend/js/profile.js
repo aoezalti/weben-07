@@ -22,7 +22,7 @@ $(document).ready(function() {
 
     function createUserTable(userData) {
         var table = `
-                        <h3>click on table elements to edit data</h3>
+                        <h3>Auf Tabellenwerte klicken um sie zu ändern</h3>
                         <table class="table">
                         <thead>
                             <tr>
@@ -54,9 +54,9 @@ $(document).ready(function() {
         var table = `<table class="table">
                     <thead>
                         <tr>
-                           <th>Type</th>
-                           <th>Value</th>
-                           <th>Remove</th>
+                           <th>Zahlungsmethode</th>
+                           <th>Zahlungsinformation</th>
+                           <th>Entfernen</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -70,7 +70,7 @@ $(document).ready(function() {
             table += `<tr>
                     <td>${payment.paymentType}</td>
                     <td>${maskedInfo}</td>
-                    <td onclick="removePaymentInfo(${payment.p_id},${payment.userid})"><a href="#">Remove</a></td>
+                    <td onclick="removePaymentInfo(${payment.p_id},${payment.userid})"><a href="#">Entfernen</a></td>
                   </tr>`;
         });
 
