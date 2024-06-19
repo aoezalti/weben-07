@@ -3,6 +3,7 @@
 include_once './ProductDAO.php';
 include_once './cartDAO.php';
 include_once './userDAO.php';
+include_once './CouponDAO.php';
 
 
 class RequestHandler
@@ -10,12 +11,14 @@ class RequestHandler
     private $productDAO;
     private $userDAO;
     private $cartDAO;
+    private $couponDAO;
 
     public function __construct()
     {
         $this->productDAO = new ProductDAO();
         $this->userDAO = new UserDAO();
         $this->cartDAO = new cartDAO();
+        $this->couponDAO = new CouponDAO();
         $this->processRequest();
     }
 
@@ -75,6 +78,9 @@ class RequestHandler
                 case 'checkDiscountCode':
                     $response = $this->cartDAO->checkDiscountCode($discountcode);
                     break;
+                case 'getCoupons':
+                    $response = $this->couponDAO->getCoupons();
+                    break;
                 default:
                     $response = null;
                     break;
@@ -101,6 +107,7 @@ class RequestHandler
             $userData = isset($data['userData']) ? $data['userData'] : [];
             $userChanges = isset($data['data']) ? $data['data'] : [];
             $productData = isset($data['data']) ? $data['data'] : [];
+            //$couponData = isset($data['data']) ? $data['data'] : [];
             $response = null;
 
 
@@ -118,12 +125,8 @@ class RequestHandler
                 case 'getOrders':
                     $response = $this ->userDAO->getAllOrdersByCustomer($data["data"]);
                     break;
-
                 case 'changePassword':
-                //  include_once './userDAO.php';
-                //    $this->userDAO = new UserDAO();
                     $response = $this->userDAO->changePassword($data["data"]);
-
                     break;
                 case 'addPaymentInfo':
                     $response = $this->userDAO->addPaymentInfo($data["data"]);
@@ -139,7 +142,6 @@ class RequestHandler
                 case 'deleteProduct':
                     $response = $this->productDAO->deleteProduct($productData);
                     break;
-
                 case 'changeProduct':
                     $response = $this->productDAO->changeProduct($productData);
                     break;
@@ -204,6 +206,12 @@ class RequestHandler
                         $_SESSION["paymentData"] = $response["paymentData"];
                         $_SESSION["orderData"] = $response["orderData"];
                     }
+                    break;
+                case 'saveCoupon':
+                    $response = $this->couponDAO->saveCoupon($data);
+                    break;
+                case 'deleteCoupon':
+                    $response = $this->couponDAO->deleteCoupon($data);
                     break;
                 default:
                     $response = array('status' => 'error', 'message' => 'No valid type provided');
